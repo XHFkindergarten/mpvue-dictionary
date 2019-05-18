@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import store from '@/vuex/store'
-import config from '@/config'
+// import store from '@/vuex/store'
+// import config from '@/config'
 export default {
   data () {
     return {
@@ -29,48 +29,9 @@ export default {
   },
 
   methods: {
-    // bindViewTap () {
-    //   const url = '../logs/main'
-    //   if (mpvuePlatform === 'wx') {
-    //     mpvue.switchTab({ url })
-    //   } else {
-    //     mpvue.navigateTo({ url })
-    //   }
-    // },
-    async doLogin (e) {
-      // 获取登录参数
-      let userInfo = e.target.userInfo
-      // 获取登录码
-      const code = await this.login()
-      // 将用户信息发送至服务器，存储到用户表中
-      await this.$request(`${config.host}/register`, 'POST', {
-        ...userInfo,
-        code
-      })
-      // 存储本地
-      wx.setStorageSync('userInfo', userInfo)
-      // 用户信息渲染到页面
-      this.userinfo = userInfo
-      // 修改vuex
-      store.state.userinfo = userInfo
-      // 修改登录状态
-      this.hasLogin = true
-    },
-    // wx.login方法
-    login () {
-      return new Promise((resolve, reject) => {
-        wx.login({
-          success (res) {
-            resolve(res.code)
-          },
-          fail (res) {
-            reject(res.errMsg)
-          }
-        })
-      })
-    }
+
   },
-  created () {
+  mounted () {
     // let app = getApp()
     // 获取用户信息
     let userInfo = wx.getStorageSync('userInfo')

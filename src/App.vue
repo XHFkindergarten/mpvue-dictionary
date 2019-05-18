@@ -4,7 +4,6 @@ export default {
   created () {
     wx.login({
       success (res) {
-        console.log(res)
         wx.request({
           url: `${config.host}/login`,
           method: 'POST',
@@ -12,7 +11,10 @@ export default {
             code: res.code
           },
           success (res) {
-            wx.setStorageSync('userInfo', res.data.userInfo)
+            if (res.data.success) {
+              console.log(res)
+              wx.setStorageSync('userInfo', res.data.userInfo)
+            }
           }
         })
       }
@@ -44,6 +46,7 @@ export default {
 </script>
 
 <style>
+@import url('./../static/font/stylesheet.css');
 .container {
   height: 100%;
   display: flex;
@@ -60,4 +63,5 @@ export default {
   -webkit-transition: width 2s;
   -o-transition: width 2s;
 }
+
 </style>

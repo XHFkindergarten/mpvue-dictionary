@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/hello/main",
     "pages/main/main",
     "pages/me/main"
   ],
