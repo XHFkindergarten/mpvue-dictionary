@@ -9,7 +9,7 @@
 export default {
   data () {
     return {
-      mainImg: 'http://www.xhfkindergarten.cn:3000/assets/default-bird.png'
+      mainImg: 'http://img.xhfkindergarten.cn/default-bird.png'
     }
   },
   computed: {

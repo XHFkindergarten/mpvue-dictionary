@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import card from '@/components/card'
 import store from '@/vuex/store'
+import config from '@/config'
 export default {
   data () {
     return {
@@ -26,7 +26,6 @@ export default {
   },
 
   components: {
-    card
   },
 
   methods: {
@@ -39,20 +38,41 @@ export default {
     //   }
     // },
     async doLogin (e) {
-      console.log(e.target.rawData)
-      let userInfo = wx.getStorageSync('userInfo')
-      const self = this
-      if (!userInfo) {
-        self.userinfo = JSON.parse(e.target.rawData)
-        wx.setStorageSync('userInfo', self.userinfo)
-      }
-      this.hasLogin = true
+      // 获取登录参数
+      let userInfo = e.target.userInfo
+      // 获取登录码
+      const code = await this.login()
+      // 将用户信息发送至服务器，存储到用户表中
+      await this.$request(`${config.host}/register`, 'POST', {
+        ...userInfo,
+        code
+      })
+      // 存储本地
+      wx.setStorageSync('userInfo', userInfo)
+      // 用户信息渲染到页面
+      this.userinfo = userInfo
+      // 修改vuex
       store.state.userinfo = userInfo
+      // 修改登录状态
+      this.hasLogin = true
+    },
+    // wx.login方法
+    login () {
+      return new Promise((resolve, reject) => {
+        wx.login({
+          success (res) {
+            resolve(res.code)
+          },
+          fail (res) {
+            reject(res.errMsg)
+          }
+        })
+      })
     }
   },
-
   created () {
     // let app = getApp()
+    // 获取用户信息
     let userInfo = wx.getStorageSync('userInfo')
     if (userInfo) {
       this.hasLogin = true
