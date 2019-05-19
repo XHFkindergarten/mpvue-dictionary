@@ -12,12 +12,24 @@ export default {
           },
           success (res) {
             if (res.data.success) {
-              console.log(res)
+              console.log('1', res)
               wx.setStorageSync('userInfo', res.data.userInfo)
             }
           }
         })
       }
+    })
+    wx.loadFontFace({
+      family: 'worksans',
+      source: 'url("http://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
+    })
+    wx.loadFontFace({
+      family: 'Bold',
+      source: 'url("http://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
+    })
+    wx.loadFontFace({
+      family: 'Eng',
+      source: 'url("http://img.xhfkindergarten.cn/NeuropolXRg-Regular.ttf")'
     })
     // 调用API从本地缓存中获取数据
     /*
@@ -46,7 +58,6 @@ export default {
 </script>
 
 <style>
-@import url('./../static/font/stylesheet.css');
 .container {
   height: 100%;
   display: flex;
@@ -62,6 +73,9 @@ export default {
   -moz-transition: width 2s;
   -webkit-transition: width 2s;
   -o-transition: width 2s;
+}
+button::after{
+  border: none;
 }
 
 </style>

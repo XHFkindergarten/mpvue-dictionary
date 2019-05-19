@@ -13,6 +13,7 @@ export function request (url, method, data) {
         }
       },
       fail: function (err) {
+        console.log('err', err)
         reject(err)
       }
     })

@@ -63,6 +63,7 @@ export default {
     async doLogin (e) {
       let userInfo = wx.getStorageSync('userInfo')
       if (!userInfo) {
+        console.log('register')
         // 获取登录参数
         userInfo = e.target.userInfo
         // 获取登录码
@@ -72,20 +73,26 @@ export default {
           ...userInfo,
           code
         })
+        console.log(openId)
         // 存储本地
         wx.setStorageSync('userInfo', {
           ...userInfo,
-          openId
+          openId: openId.openId
         })
         // 修改vuex
         store.state.userinfo = {
           ...userInfo,
-          openId
+          openId: openId.openId
         }
+        wx.navigateTo({
+          url: '/pages/select/main'
+        })
+      } else {
+        console.log('login success')
+        wx.switchTab({
+          url: '/pages/main/main'
+        })
       }
-      wx.switchTab({
-        url: '/pages/main/main'
-      })
     },
     // wx.login方法
     login () {
@@ -102,19 +109,13 @@ export default {
     }
   },
   mounted () {
-    this.index = Math.ceil(Math.random() * this.wallpaperNum)
+    this.index = Math.floor(Math.random() * this.wallpaperNum)
+    this.$message.success()
   }
 }
 </script>
 
 <style lang="less" scoped>
-@font-face {font-family: 'thin';
-  src: url('//at.alicdn.com/t/webfont_zlrahtysk3q.eot'); /* IE9*/
-  src: url('//at.alicdn.com/t/webfont_zlrahtysk3q.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-  url('//at.alicdn.com/t/webfont_zlrahtysk3q.woff') format('woff'), /* chrome、firefox */
-  url('//at.alicdn.com/t/webfont_zlrahtysk3q.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
-  url('//at.alicdn.com/t/webfont_zlrahtysk3q.svg#NotoSansHans-DemiLight') format('svg'); /* iOS 4.1- */
-}
 
 .page-container{
   position: fixed;
@@ -125,17 +126,17 @@ export default {
   background-size: cover;
   background-repeat: no-repeat;
   .title-container{
-    // font-family: 'webfont';
+    // font-family: 'thin';
     margin-top: 200rpx;
     color: #3F4C50;
     text-align: left;
     width: 100%;
     padding: 0 40rpx;
     font-size: 40px;
-    font-weight: bold;
+    font-weight: bolder;
   }
   .explain-container{
-    font-family: 'thin';
+    font-family: 'worksans';
     font-size: 16px;
     font-weight:thin;
     padding: 0 40rpx;
