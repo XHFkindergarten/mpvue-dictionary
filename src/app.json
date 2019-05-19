@@ -1,9 +1,10 @@
 {
   "pages": [
+    "pages/main/main",
+    "pages/search/main",
     "pages/hello/main",
     "pages/select/main",
     "pages/book/main",
-    "pages/main/main",
     "pages/me/main"
   ],
   "window": {
