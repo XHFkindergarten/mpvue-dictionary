@@ -1,7 +1,8 @@
 {
   "pages": [
-    "pages/main/main",
+    "pages/remember/main",
     "pages/search/main",
+    "pages/main/main",
     "pages/hello/main",
     "pages/select/main",
     "pages/book/main",
@@ -19,13 +20,11 @@
     "selectedColor": "#333",
     "borderStyle": "white",
     "list": [{
-      "text": "首页",
       "pagePath": "pages/main/main",
       "iconPath": "static/tabs/home.png",
       "selectedIconPath": "static/tabs/home-active.png"
     }, 
     {
-      "text": "我的",
       "pagePath": "pages/me/main",
       "iconPath": "static/tabs/me.png",
       "selectedIconPath": "static/tabs/me-active.png"
