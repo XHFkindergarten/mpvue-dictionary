@@ -1,8 +1,8 @@
 <template>
   <div class="page-container" :style="'background-image:url('+wallpaperUrl[index]+');'">
-    <div class="title-container" :style="'color:'+titleColor[index]+';'">Abandon单词</div>
-    <div class="explain-container" :style="'color:'+titleColor[index]+';'">fantastic tool for memorize</div>
-    <div class="login-container">
+    <div class="title-container fade-in" :style="'color:'+titleColor[index]+';'">Abandon单词</div>
+    <div class="explain-container fade-in" :style="'color:'+titleColor[index]+';'">fantastic tool for memorize</div>
+    <div class="login-container fade-in">
       <button class="button" open-type="getUserInfo" @getuserinfo="doLogin" :style="'background:'+buttonColor[index]+';color:'+beginColor[index]+';'">开始学习</button>
     </div>
   </div>
@@ -109,6 +109,10 @@ export default {
     }
   },
   mounted () {
+    wx.loadFontFace({
+      family: 'Bold',
+      source: 'url("http://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
+    })
     this.index = Math.floor(Math.random() * this.wallpaperNum)
     this.$message.success()
   }
@@ -116,7 +120,20 @@ export default {
 </script>
 
 <style lang="less" scoped>
-
+.fade-in{
+  animation: fade 3s ease-in-out forwards;
+}
+@keyframes fade {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 .page-container{
   position: fixed;
   left: 0;
@@ -126,7 +143,7 @@ export default {
   background-size: cover;
   background-repeat: no-repeat;
   .title-container{
-    // font-family: 'thin';
+    font-family: 'Bold';
     margin-top: 200rpx;
     color: #3F4C50;
     text-align: left;

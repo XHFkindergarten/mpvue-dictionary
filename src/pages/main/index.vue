@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="btn-container">
-      <button class="begin">开 始</button>
+      <button @click="begin" class="begin">开 始</button>
     </div>
   </div>
   
@@ -27,6 +27,12 @@ export default {
   computed: {
   },
   methods: {
+    // 点击开始学习
+    begin () {
+      wx.navigateTo({
+        url: '/pages/vocGroup/main'
+      })
+    },
     searchFocus () {
       wx.navigateTo({
         url: '/pages/search/main'
@@ -77,6 +83,7 @@ export default {
     height: 40rpx;
   }
 }
+
 .page-container{
   display: flex;
   flex-direction: column;
@@ -86,7 +93,6 @@ export default {
   background: #e6e5e3;
   border-bottom-left-radius: 100rpx;
   border-bottom-right-radius: 100rpx;
- 
   .num-container{
     width: 80%;
     height: 400rpx;

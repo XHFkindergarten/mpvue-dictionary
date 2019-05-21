@@ -12,25 +12,24 @@ export default {
           },
           success (res) {
             if (res.data.success) {
-              console.log('1', res)
               wx.setStorageSync('userInfo', res.data.userInfo)
             }
           }
         })
       }
     })
-    wx.loadFontFace({
-      family: 'worksans',
-      source: 'url("http://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
-    })
-    wx.loadFontFace({
-      family: 'Bold',
-      source: 'url("http://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
-    })
-    wx.loadFontFace({
-      family: 'Eng',
-      source: 'url("http://img.xhfkindergarten.cn/NeuropolXRg-Regular.ttf")'
-    })
+    // wx.loadFontFace({
+    //   family: 'worksans',
+    //   source: 'url("http://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
+    // })
+    // wx.loadFontFace({
+    //   family: 'Bold',
+    //   source: 'url("http://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
+    // })
+    // wx.loadFontFace({
+    //   family: 'Eng',
+    //   source: 'url("http://img.xhfkindergarten.cn/NeuropolXRg-Regular.ttf")'
+    // })
     // 调用API从本地缓存中获取数据
     /*
      * 平台 api 差异的处理方式:  api 方法统一挂载到 mpvue 名称空间, 平台判断通过 mpvuePlatform 特征字符串

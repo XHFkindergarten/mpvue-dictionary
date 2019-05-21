@@ -74,6 +74,8 @@ export default {
       console.log(res)
       if (res.success) {
         this.$message.success('添加卡片成功')
+      } else {
+        this.$message.warning(res.msg)
       }
     },
     // 返回

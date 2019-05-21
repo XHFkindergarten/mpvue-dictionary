@@ -1,7 +1,7 @@
 <template>
   <div class="card-container">
     <div class="pic-container">
-      <img class="pic" :src="picUrl">
+      <img class="pic" :src="wordInfo.labelImg" :onload="onLoad">
     </div>
     <div :class="cardSide?'content-container':'content-container max-height'">
       <div class="word-name">{{wordInfo.word_name}}</div>
@@ -28,7 +28,12 @@
           <div v-show="wordInfo.exchange.word_er" class="word-pl">比较级:{{wordInfo.exchange.word_er}}</div>
           <div v-show="wordInfo.exchange.word_est" class="word-pl">最高级:{{wordInfo.exchange.word_est}}</div>
         </div>
-        <div class="sent-container" v-for="sent in wordInfo.sentense" :key="sent.orig">
+        <div @click="toggleSent" class="but-container">
+          <div :class="showSent?'down':'up'">
+            <Icon size="mini" icon="down"></Icon>
+          </div>
+        </div>
+        <div v-show="showSent" class="sent-container" v-for="sent in wordInfo.sentense" :key="sent.orig">
           <div class="en"><span v-html="sent.orig"></span></div>
           <div class="cn">{{sent.trans}}</div>
         </div>
@@ -45,7 +50,9 @@ export default {
       picUrl: 'http://img.xhfkindergarten.cn/default_label_img.jpg',
       // 音频实例
       ukAudio: '',
-      usAudio: ''
+      usAudio: '',
+      // 是否显示sentense
+      showSent: false
     }
   },
   props: [
@@ -56,6 +63,9 @@ export default {
     Icon
   },
   methods: {
+    toggleSent () {
+      this.showSent = !this.showSent
+    },
     audioUk (pron) {
       // 创建音频实例
       const audio = wx.createInnerAudioContext()
@@ -83,16 +93,20 @@ export default {
       family: 'nolan',
       source: 'url("http://img.xhfkindergarten.cn/Nolan-Bold_0.ttf")'
     })
-    wx.loadFontFace({
-      family: 'worksans',
-      source: 'url("http://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
-    })
   }
 }
 </script>
 <style lang="less" scoped>
+.down {
+  transform: rotate(180deg);
+  transition: all 0.6s;
+}
+.up {
+  transform: rotate(0deg);
+  transition: all 0.6s;
+}
 .max-height{
-  max-height: 1000rpx !important;
+  max-height: 1300rpx !important;
 }
 .card-container{
   margin-top: 30rpx;
@@ -139,18 +153,26 @@ export default {
         color: #8A8A8A;
       }
     }
+    .but-container{
+      width: 90%;
+      height: 70rpx;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+    }
     .sent-container{
       width: 90%;
       .en{
-        margin: 40rpx 0;
+        margin: 10rpx 0 40rpx;
         font-weight: bolder;
-        font-family: 'worksans';
+        font-family: 'English';
         font-size: 14px;
         color: #8A8A8A;
       }
       .cn{
         font-size: 14px;
         color: #8A8A8A;
+        margin-bottom: 30rpx;
       }
     }
     .pron{
@@ -171,5 +193,12 @@ export default {
       }
     }
   }
+}
+@font-face {font-family: 'English';
+  src: url('//at.alicdn.com/t/webfont_s6tnn2d2j0h.eot'); /* IE9*/
+  src: url('//at.alicdn.com/t/webfont_s6tnn2d2j0h.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+  url('//at.alicdn.com/t/webfont_s6tnn2d2j0h.woff') format('woff'), /* chrome、firefox */
+  url('//at.alicdn.com/t/webfont_s6tnn2d2j0h.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
+  url('//at.alicdn.com/t/webfont_s6tnn2d2j0h.svg#NotoSansHans-DemiLight') format('svg'); /* iOS 4.1- */
 }
 </style>

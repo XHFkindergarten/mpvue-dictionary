@@ -5,8 +5,9 @@ export function request (url, method, data) {
       data: data,
       method: method,
       url: url,
+      // 切记后端的ctx.body中一定要加success字段啊!
       success: function (res) {
-        if (res.data.success) {
+        if (res.data) {
           resolve(res.data)
         } else {
           reject(res.data)
