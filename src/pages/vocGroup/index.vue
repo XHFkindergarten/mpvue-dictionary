@@ -11,7 +11,7 @@
       
       <div class="btn-container">
         <button @click="backTo" class="back">返回</button>
-        <button @click="re" class="refresh">
+        <button @click="reStart" class="refresh">
           <img class="icon" src="/static/icon/refresh.png">
         </button>
         <button @click="getMore" class="more">继续</button>
@@ -105,6 +105,20 @@ export default {
   //   }
   // })
   methods: {
+    // 重新背一遍
+    async reStart () {
+      const openId = wx.getStorageSync('userInfo').openId
+      const res = await this.$request(`${config.host}/word/updateSchedule`, 'POST', {
+        bookId: this.bookId,
+        openId,
+        num: -1
+      })
+      console.log(res)
+      if (res.success) {
+        await this.getTask()
+        this.index = 0
+      }
+    },
     async updateSchedule () {
       if (!this.bookId) {
         return

@@ -3,14 +3,14 @@
     <div class="gray-container">
       <div class="circle">
         <div class="title">
-          {{tpyeInfo.title}}
+          {{typeInfo.title}}
         </div>
       </div>
       <div class="type">
-        {{tpyeInfo.type}}
+        {{typeInfo.type}}
       </div>
       <div class="explain">
-        {{tpyeInfo.explain}}
+        {{typeInfo.explain}}
       </div>
     </div>
     <div class="white-container">
@@ -36,7 +36,7 @@ export default {
   data () {
     return {
       // 之前选择的类别
-      tpyeInfo: '',
+      typeInfo: '',
       // 书籍列表
       bookList: [],
       // 被选中的书籍列表
@@ -48,7 +48,7 @@ export default {
   },
   onLoad (options) {
     console.log(options)
-    this.tpyeInfo = {
+    this.typeInfo = {
       ...options
     }
   },
@@ -61,7 +61,8 @@ export default {
       console.log(openId)
       const res = await this.$request(`${config.host}/word/addBook`, 'POST', {
         openId,
-        bookList: this.selectedBooks
+        bookList: this.selectedBooks,
+        selected: this.typeInfo.title
       }).catch(err => {
         this.$message.error(err)
       })
@@ -71,7 +72,7 @@ export default {
           wx.switchTab({
             url: '/pages/main/main'
           })
-        }, 3000)
+        }, 2000)
       }
     },
     // 返回
@@ -92,7 +93,7 @@ export default {
     },
     async getBookList () {
       // 获取图书列表
-      const res = await this.$request(`${config.host}/word/getBookList?type=${this.tpyeInfo.title}`)
+      const res = await this.$request(`${config.host}/word/getBookList?type=${this.typeInfo.title}`)
         .catch(err => {
           throw err
         })
@@ -130,8 +131,8 @@ export default {
     align-items: center;
     display: flex;
     justify-content: center;
-    border-bottom-left-radius: 50rpx;
-    border-bottom-right-radius: 50rpx;
+    border-bottom-left-radius: 100rpx;
+    border-bottom-right-radius: 100rpx;
     .circle{
       margin-top: 100rpx;
       border-radius: 50%;

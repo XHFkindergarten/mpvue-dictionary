@@ -7,6 +7,7 @@
       <div class="num-container">
         <div class="main-num">{{task.length}}</div>
         <div class="explain">Cards to memorize</div>
+        <div class="total">Total cards: 106</div>
       </div>
     </div>
     <div class="btn-container">
@@ -30,7 +31,7 @@ export default {
     // 点击开始学习
     begin () {
       wx.navigateTo({
-        url: '/pages/vocGroup/main'
+        url: '/pages/remember/main'
       })
     },
     searchFocus () {
@@ -49,6 +50,10 @@ export default {
     this.getTask(0)
   },
   mounted () {
+    wx.loadFontFace({
+      family: 'worksans',
+      source: 'url("http://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
+    })
     // await wx.loadFontFace({
     //   family: 'comfortaBold',
     //   source: 'url("http://img.xhfkindergarten.cn/ComfortaBold")'
@@ -109,6 +114,12 @@ export default {
       color: #64656a;
       font-size: 20px;
       font-family: 'Bold'
+    }
+    .total{
+      margin-top: 60rpx;
+      font-size: 18px;
+      font-family: 'worksans';
+      color: #64656a;
     }
     // // background: #D2D1CD;
     // // border-radius: 50rpx;

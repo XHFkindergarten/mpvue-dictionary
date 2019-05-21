@@ -121,7 +121,7 @@ export default {
 
 <style lang="less" scoped>
 .fade-in{
-  animation: fade 3s ease-in-out forwards;
+  animation: fade 2s ease-in-out forwards;
 }
 @keyframes fade {
   0% {
