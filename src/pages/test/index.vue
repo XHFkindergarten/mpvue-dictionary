@@ -1,8 +1,14 @@
 <template>
-  <div :class="[{'background':toEnd}, 'page-container']" :style="'min-height:'+windowHeight+'px;'">
+  <div :class="[{'background':toEnd}, {'page-container':!toEnd}]" :style="'min-height:'+windowHeight+'px;'">
     <div :class="[{leave:leave},{enter:enter},'card-container']">
       <wordcard v-if="cardInfo&&task[index].isFree==1" :test="true" :cardSide="!next" :wordInfo="cardInfo"></wordcard>
       <freecard v-if="cardInfo&&task[index].isFree==0" :cardSide="!next" :wordInfo="cardInfo"></freecard>
+    </div>
+    <div v-if="!toEnd" class="answer-tip">
+      Your answer:
+    </div>
+    <div v-if="!toEnd" class="input-container">
+      <input v-model="inputAnswer" disable class="single-input" type="text" maxlength="-1">
     </div>
     <div v-if="toEnd" class="bird-container">
       <div class="wrapper">
@@ -14,12 +20,15 @@
       </div>
     </div>
     <div :class="cardInfo?'bottom-container hasCard':'noCard'">
-      <button v-show="!next" @click="no">
+      <button @click="checkAns" v-show="!next">
+        <Icon icon="correct"></Icon>
+      </button>
+      <!-- <button v-show="!next" @click="no">
         <Icon icon="sad"></Icon>
       </button>
       <button v-show="!next" @click="yes">
         <Icon icon="happy"></Icon>
-      </button>
+      </button> -->
       <button @click="setTime" v-show="next">
         <Icon size='mid-lar' icon="time"></Icon>
       </button>
@@ -59,7 +68,9 @@ export default {
         '15天'
       ],
       enter: false,
-      leave: false
+      leave: false,
+      inputAnswer: '',
+      autoFocus: true
     }
   },
   computed: {
@@ -93,6 +104,8 @@ export default {
     async index (newValue, oldValue) {
       this.cardInfo = ''
       this.enter = true
+      this.answer = ''
+      this.inputAnswer = ''
       setTimeout(() => {
         this.enter = false
       }, 1100)
@@ -105,12 +118,23 @@ export default {
       }
       this.next = false
       this.timeGap = this.task[newValue].nextGap
+      if (this.task[newValue].isFree === 0) {
+        this.answer = this.cardInfo.freeBack
+      } else {
+        this.answer = this.cardInfo.word_name
+      }
     }
   },
   onShow () {
 
   },
+
   methods: {
+    inputSth () {
+      this.$nextTick(() => {
+        this.$refs.text3.focus()
+      })
+    },
     // 返回
     backTo () {
       wx.switchTab({
@@ -153,7 +177,7 @@ export default {
         this.leave = false
         this.index++
       }, 800)
-      if (this.index === this.task.length) {
+      if (this.index === this.task.length - 1) {
         // TODO
         console.log('Cards out')
       } else {
@@ -165,23 +189,36 @@ export default {
         console.log(res)
       }
     },
-    // 记不住这个单词
-    no () {
+    // 检查答案
+    checkAns () {
+      if (!this.inputAnswer) {
+        this.$message.warning('请输入答案')
+        return
+      }
       this.next = true
       this.cardSide = false
     },
-    yes () {
-      // 记录这个单词
-      this.next = true
-      this.cardSide = false
-      this.timeGap++
-    },
+    // // 记不住这个单词
+    // no () {
+    //   this.next = true
+    //   this.cardSide = false
+    // },
+    // yes () {
+    //   // 记录这个单词
+    //   this.next = true
+    //   this.cardSide = false
+    //   this.timeGap++
+    // },
     reverse () {
       this.cardSide = !this.cardSide
     }
   },
   async mounted () {
     this.initPage()
+    wx.loadFontFace({
+      family: 'worksans',
+      source: 'url("http://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
+    })
   }
 }
 </script>
@@ -270,6 +307,43 @@ export default {
   // position: relative; top: -200rpx;
   animation: down 1s ease-in-out forwards;
 }
+.answer-tip{
+  font-size: 14px;
+  font-family: 'worksans';
+  padding-left: 100rpx;
+  padding-bottom: 30rpx;
+  font-weight: bolder;
+  color: #999;
+  margin-top: 100rpx;
+  animation: slowup 1s ease-in-out forwards;
+}
+.input-container{
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .single-input{
+    animation: slowup 1s ease-in-out forwards;
+    width: 100%;
+    height: 80rpx;
+    line-height: 80rpx;
+    border-radius: 40rpx;
+    padding: 0 30rpx;
+    font-size: 30rpx;
+    background: #EEE;
+    text-align: center;
+    margin: 0 10rpx 0;
+  }
+  @keyframes slowup {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}
 .bottom-container{
   height: 76rpx;
   display: flex;
@@ -300,7 +374,7 @@ export default {
   animation: show 1s backwards;
 }
 .page-container{
-  // padding-bottom: 200rpx;
+  padding-bottom: 200rpx;
 }
 @font-face {font-family: 'siyuanBold';
   src: url('//at.alicdn.com/t/webfont_xiycqi2lgj.eot'); /* IE9*/

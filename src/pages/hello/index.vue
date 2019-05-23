@@ -149,12 +149,12 @@ export default {
     text-align: left;
     width: 100%;
     padding: 0 40rpx;
-    font-size: 40px;
+    font-size: 80rpx;
     font-weight: bolder;
   }
   .explain-container{
     font-family: 'worksans';
-    font-size: 16px;
+    font-size: 32rpx;
     font-weight:thin;
     padding: 0 40rpx;
   }

@@ -56,7 +56,7 @@ export default {
   }
   .userinfo-nickname {
     .nick-name {
-      font-size: 20px;
+      font-size: 40rpx;
       font-weight: bolder;
     }
   }

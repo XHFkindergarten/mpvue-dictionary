@@ -149,7 +149,7 @@ export default {
 .page-container{
   .title{
     font-family: 'Eng';
-    font-size: 25px;
+    font-size: 50rpx;
     margin: 40rpx 0 0 30rpx;
     font-weight: bold;
     height: 100rpx;
@@ -170,7 +170,7 @@ export default {
         font-weight: normal;
         height: 70rpx;
         width: 120rpx;
-        font-size: 14px;
+        font-size: 28rpx;
         color: #413E49;
       }
     }

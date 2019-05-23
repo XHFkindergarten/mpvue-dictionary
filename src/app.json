@@ -1,9 +1,10 @@
 {
   "pages": [
+    "pages/main/main",
+    "pages/test/main",
     "pages/vocGroup/main",
     "pages/remember/main",
     "pages/usage/main",
-    "pages/main/main",
     "pages/select/main",
     "pages/hello/main",
     "pages/search/main",

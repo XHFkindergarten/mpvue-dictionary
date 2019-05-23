@@ -43,7 +43,7 @@ export default {
     align-items: center;
     .title {
       font-family: 'Bold';
-      font-size: 36px;
+      font-size: 72rpx;
       text-align: center;
       color: #706F74;
     }
@@ -53,12 +53,12 @@ export default {
     text-align: center;
     color: #413E49;
     font-weight: bolder;
-    font-size: 18px;
+    font-size: 36rpx;
     margin-top: 30rpx;
   }
   .explain {
     font-family: 'worksans';
-    font-size: 14px;
+    font-size: 28rpx;
     width: 80%;
     margin-top: 14rpx;
     text-align: center;

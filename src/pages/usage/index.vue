@@ -45,9 +45,13 @@
       </div>
     </div>
     <div class="pre">今日的单词列表</div>
-    <div v-for="voc in vocList" :key="voc.id" @click="showDetail(voc)" class="voc-container">
+    <div v-for="voc in showVocList" :key="voc.id" @click="showDetail(voc)" class="voc-container">
       {{voc.vocInfo.vocabulary}}
     </div>
+    <div v-if="vocList.length!==vocListIndex*10" class="bottom-tip">
+      {{bottomLoading?bottomTip2:bottomTip1}}
+    </div>
+    <div v-else class="bottom-tip">{{bottomTip3}}</div>
   </div>
 </template>
 
@@ -103,13 +107,30 @@ export default {
       vocList: [],
       // 展示的单个单词信息
       vocDetail: '',
-      showSent: false
+      showSent: false,
+      vocListIndex: 1,
+      bottomLoading: false,
+      bottomTip1: 'Pull to get more:)',
+      bottomTip2: 'Loading...(*╹▽╹*)',
+      bottomTip3: 'No more Words'
     }
+  },
+  onReachBottom () {
+    this.bottomLoading = true
+    setTimeout(() => {
+      this.bottomLoading = false
+      if (this.vocList.length / 10 !== this.vocListIndex) {
+        this.vocListIndex++
+      }
+    }, 1200)
   },
   components: {
     Icon
   },
   computed: {
+    showVocList () {
+      return this.vocList.slice(0, this.vocListIndex * 10)
+    },
     typeInfo () {
       const typename = wx.getStorageSync('userInfo').selected
       return this.typeList.filter(t => {
@@ -191,7 +212,6 @@ export default {
 </script>
 <style lang="less" scoped>
 .page-container{
-  padding-bottom: 140rpx;
   .gray-container{
     padding-bottom: 80rpx;
     min-height: 800rpx;
@@ -224,24 +244,24 @@ export default {
       align-items: center;
       .title{
         font-family: 'Bold';
-        font-size: 56px;
+        font-size: 112rpx;
         text-align: center;
         color: #706F74;
       }
       .title2{
         font-family: 'Bold';
-        font-size: 45px;
+        font-size: 90rpx;
         text-align: center;
         color: #706F74;
       }
       .start{
         font-family: 'worksans';
-        font-size: 22px;
+        font-size: 44rpx;
       }
     }
     .pron{
       margin-top: 40rpx;
-      font-size: 15px;
+      font-size: 30rpx;
       color: #8A8A8A;
       .uk{
         margin-right: 10rpx;
@@ -263,7 +283,7 @@ export default {
         width: 45%;
         float: left;
         margin: 10rpx 0;
-        font-size: 13px;
+        font-size: 26rpx;
         color: #8A8A8A;
       }
     }
@@ -288,11 +308,11 @@ export default {
         margin: 10rpx 0 40rpx;
         font-weight: bolder;
         font-family: 'English';
-        font-size: 14px;
+        font-size: 28rpx;
         color: #8A8A8A;
       }
       .cn{
-        font-size: 14px;
+        font-size: 28rpx;
         color: #8A8A8A;
         margin-bottom: 30rpx;
       }
@@ -302,12 +322,12 @@ export default {
       text-align: center;
       color: #413E49;
       font-weight: bolder;
-      font-size: 24px;
+      font-size: 48rpx;
       margin-top: 30rpx;
     }
     .explain {
       font-family: 'worksans';
-      font-size: 14px;
+      font-size: 28rpx;
       width: 80%;
       margin: 14rpx 0 40rpx;
       text-align: center;
@@ -325,7 +345,13 @@ export default {
     padding: 60rpx 0;
     text-align: center;
     font-family: 'Bold';
-    font-size: 20px;
+    font-size: 40rpx;
+  }
+  .bottom-tip{
+    font-family: 'worksans';
+    font-size: 28rpx;
+    text-align: center;
+    color: #706F74;
   }
 }
 @font-face {font-family: 'boldfont';

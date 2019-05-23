@@ -51,11 +51,11 @@ export default {
   padding: 20rpx 10rpx;
   margin: 40rpx 0;
   .title{
-    font-size: 16px;
+    font-size: 32rpx;
     font-weight: thin;
   }
   .info {
-    font-size: 12px;
+    font-size: 24rpx;
     color: #999;
   }
 }

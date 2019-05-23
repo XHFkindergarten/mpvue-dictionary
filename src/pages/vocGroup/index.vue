@@ -17,7 +17,7 @@
         <button @click="getMore" class="more">继续</button>
       </div>
     </div>
-    <div :class="hasTask?'bottom-container hasCard':'noCard'">
+    <div :class="cardInfo?'bottom-container hasCard':'noCard'">
       <button @click="remove">
         <Icon icon="cross2"></Icon>
       </button>
@@ -84,9 +84,9 @@ export default {
       }
       wx.setStorageSync('index', newValue)
       this.cardInfo = ''
+      this.enter = false
       const cardInfo = await this.$request(`${config.host}/word/oneWord?word=${this.task[newValue].vocabulary}`)
       this.leave = false
-      this.enter = false
       this.cardInfo = cardInfo.word
     }
   },
@@ -95,16 +95,17 @@ export default {
       return this.task.length > 0
     }
   },
-  // wx.showActionSheet({
-  //   itemList: ['A', 'B', 'C'],
-  //   success (res) {
-  //     console.log(res.tapIndex)
-  //   },
-  //   fail (res) {
-  //     console.log(res.errMsg)
-  //   }
-  // })
+  onShow () {
+    this.initPage()
+  },
   methods: {
+    // 初始化页面
+    initPage () {
+      this.leave = false
+      this.enter = false
+      this.cardSide = true
+      this.cardInfo = ''
+    },
     // 重新背一遍
     async reStart () {
       const openId = wx.getStorageSync('userInfo').openId
@@ -183,10 +184,8 @@ export default {
     // 获取当前的index
     const index = wx.getStorageSync('index')
     if (index) {
-      console.log(index, 1)
       this.index = index
     } else {
-      console.log(index, 2)
       this.index = 0
     }
   }
@@ -257,7 +256,7 @@ export default {
       position: absolute;
       bottom: 0;
       width: 100%;
-      font-size: 30px;
+      font-size: 60rpx;
     }
   }
   .btn-container{
@@ -273,7 +272,7 @@ export default {
       border-radius: 50rpx;
       background: #e6e5e3;
       color: #000;
-      font-size: 16px;
+      font-size: 32rpx;
       line-height: 100rpx;
     }
     .refresh{
@@ -296,7 +295,7 @@ export default {
       border-radius: 50rpx;
       background: #587AA5;
       color: #fff;
-      font-size: 16px;
+      font-size: 32rpx;
       line-height: 100rpx;
     }
   }

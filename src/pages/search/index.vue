@@ -2,7 +2,7 @@
   <div class="page-container">
     <div class="search-container">
       <div class="search-wrapper">
-        <input v-model="searchText" @confirm="comfirmInput" @blur="searchBlur" @input="searchInput" :focus="autoFocus" class="search" placeholder-style="font-size:14px;font-family:'cancel';" comfirm-type="search" placeholder="请输入搜索单词" type="text">
+        <input v-model="searchText" @confirm="comfirmInput" @blur="searchBlur" @input="searchInput" :focus="autoFocus" class="search" placeholder-style="font-size:28rpx;font-family:'cancel';" comfirm-type="search" placeholder="请输入搜索单词" type="text">
         <button v-if="searchText" @click="cancel" class="clear">
           <img src="/static/icon/cross2.png" style="width:20rpx;height:20rpx;">
         </button>
@@ -153,7 +153,7 @@ export default {
       }
       .search{
         z-index: 1;
-        font-size: 16px;
+        font-size: 32rpx;
         padding: 0 40rpx;
         height: 70rpx;
         border-radius: 35rpx;
@@ -163,7 +163,7 @@ export default {
     
     .cancel{
       font-family: 'cancel';
-      font-size: 16px;
+      font-size: 32rpx;
       line-height: 38px;
       background: #fff;
     }

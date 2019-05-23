@@ -144,7 +144,7 @@ export default {
       align-items: center;
       .title{
         font-family: 'Bold';
-        font-size: 56px;
+        font-size: 112rpx;
         text-align: center;
         color: #706F74;
       }
@@ -154,12 +154,12 @@ export default {
       text-align: center;
       color: #413E49;
       font-weight: bolder;
-      font-size: 24px;
+      font-size: 48rpx;
       margin-top: 30rpx;
     }
     .explain {
       font-family: 'worksans';
-      font-size: 14px;
+      font-size: 28rpx;
       width: 80%;
       margin: 14rpx 0 40rpx;
       text-align: center;
@@ -169,7 +169,7 @@ export default {
     padding: 50rpx 40rpx;
     .title{
       font-family: 'Bold';
-      font-size: 16px;
+      font-size: 32rpx;
     }
   }
   .book-container{
