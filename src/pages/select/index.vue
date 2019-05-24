@@ -28,6 +28,7 @@
 </template>
 
 <script>
+import config from '@/config'
 import Card from '@/components/card'
 export default {
   data () {
@@ -115,10 +116,30 @@ export default {
       })
     },
     // 确认
-    comfirm () {
+    async comfirm () {
       if (!this.selectedCard) {
         this.$message.warning('请选择学习类别:)')
       } else if (this.selectedCard.title === 'WDNMD') {
+        wx.login({
+          success (res) {
+            wx.request({
+              url: `${config.host}/login`,
+              method: 'POST',
+              data: {
+                code: res.code
+              },
+              success (res) {
+                if (res.data.success) {
+                  wx.setStorageSync('userInfo', res.data.userInfo)
+                }
+              }
+            })
+          }
+        })
+        const openId = wx.getStorageSync('userInfo').openId
+        const res = await this.$request(`${config.host}/wdnmd?openId=${openId}`)
+        console.log(res.userInfo)
+        wx.setStorageSync('userInfo', res.userInfo)
         wx.reLaunch({
           url: '/pages/main/main'
         })
@@ -132,15 +153,15 @@ export default {
   mounted () {
     wx.loadFontFace({
       family: 'worksans',
-      source: 'url("http://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
+      source: 'url("https://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
     })
     wx.loadFontFace({
       family: 'Bold',
-      source: 'url("http://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
+      source: 'url("https://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
     })
     wx.loadFontFace({
       family: 'Eng',
-      source: 'url("http://img.xhfkindergarten.cn/NeuropolXRg-Regular.ttf")'
+      source: 'url("https://img.xhfkindergarten.cn/NeuropolXRg-Regular.ttf")'
     })
   }
 }

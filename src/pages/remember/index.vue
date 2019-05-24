@@ -1,19 +1,19 @@
 <template>
-  <div :class="[{'background':toEnd}, 'page-container']" :style="'min-height:'+windowHeight+'px;'">
-    <div :class="[{leave:leave},{enter:enter},'card-container']">
-      <wordcard v-if="cardInfo&&task[index].isFree==1" :test="true" :cardSide="!next" :wordInfo="cardInfo"></wordcard>
+  <div :class="[{'background':toEnd||!hasTask}, 'page-container']" :style="'min-height:'+windowHeight+'px;'">
+    <div :class="[{'down':down},{'left':left},{'right':right},'card-container']">
+      <wordcard v-if="cardInfo&&task[index].isFree==1" :test="false" :cardSide="!next" :wordInfo="cardInfo"></wordcard>
       <freecard v-if="cardInfo&&task[index].isFree==0" :cardSide="!next" :wordInfo="cardInfo"></freecard>
     </div>
-    <div v-if="toEnd" class="bird-container">
+    <div v-if="toEnd || !hasTask" class="bird-container">
       <div class="wrapper">
-        <img class="bird" src="http://img.xhfkindergarten.cn/boxer-bird.png">
+        <img class="bird" src="https://img.xhfkindergarten.cn/boxer-bird.png">
         <div class="word">恭喜完成所有卡片</div>
       </div>
       <div class="btn-container">
         <button @click="backTo" class="back">返回</button>
       </div>
     </div>
-    <div :class="cardInfo?'bottom-container hasCard':'noCard'">
+    <div :class="[{fadein:task.length>0}, 'bottom-container']">
       <button v-show="!next" @click="no">
         <Icon icon="sad"></Icon>
       </button>
@@ -58,8 +58,10 @@ export default {
         '7天',
         '15天'
       ],
-      enter: false,
-      leave: false
+      down: false,
+      left: false,
+      right: false,
+      hasTask: true
     }
   },
   computed: {
@@ -79,9 +81,6 @@ export default {
         }
       }
       return arr
-    },
-    hasTask () {
-      return this.task.length > 0
     }
   },
   components: {
@@ -91,11 +90,14 @@ export default {
   },
   watch: {
     async index (newValue, oldValue) {
+      console.log('index change')
       this.cardInfo = ''
-      this.enter = true
-      setTimeout(() => {
-        this.enter = false
-      }, 1100)
+      this.down = false
+      this.right = false
+      // this.enter = true
+      // setTimeout(() => {
+      //   this.enter = false
+      // }, 1100)
       let cardInfo
       if (this.task[newValue].isFree === 1) {
         cardInfo = await this.$request(`${config.host}/word/oneWord?word=${this.task[newValue].voc}`)
@@ -103,6 +105,7 @@ export default {
       } else {
         this.cardInfo = this.task[newValue]
       }
+      this.down = true
       this.next = false
       this.timeGap = this.task[newValue].nextGap
     }
@@ -128,7 +131,8 @@ export default {
       const openId = await wx.getStorageSync('userInfo').openId
       const res = await this.$request(`${config.host}/word/getMyTask?openId=${openId}`)
       this.task = res.cards
-      if (!this.hasTask) {
+      if (!res || res.cards.length === 0) {
+        this.hasTask = false
         return
       }
       this.index = 0
@@ -148,11 +152,12 @@ export default {
     },
     // 下一张卡片
     async nextCard () {
-      this.leave = true
+      this.right = true
       setTimeout(() => {
-        this.leave = false
+        this.right = false
         this.index++
-      }, 800)
+      }, 1000)
+      console.log(this.index, this.task.length)
       if (this.index === this.task.length) {
         // TODO
         console.log('Cards out')
@@ -186,32 +191,32 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.enter {
-  animation: enter 1s ease-in-out forwards !important;
-}
-.leave{
-  animation: leave 0.8s ease-in-out forwards !important;
-}
-@keyframes enter {
-  from {
-    position: relative;
-    top:-800px;
-  }
-  to {
-    position: relative;
-    top:0;
-  }
-}
-@keyframes leave {
-  from {
-    position: relative;
-    left:0;
-  }
-  to {
-    position: relative;
-    left: -800rpx;
-  }
-}
+// .enter {
+//   animation: enter 1s ease-in-out forwards !important;
+// }
+// .leave{
+//   animation: leave 0.8s ease-in-out forwards !important;
+// }
+// @-webkit-keyframes enter {
+//   from {
+//     position: relative;
+//     top:-800px;
+//   }
+//   to {
+//     position: relative;
+//     top:0;
+//   }
+// }
+// @-webkit-keyframes leave {
+//   from {
+//     position: relative;
+//     left:0;
+//   }
+//   to {
+//     position: relative;
+//     left: -800rpx;
+//   }
+// }
 @keyframes appear {
   from {
     opacity: 0;
@@ -263,15 +268,32 @@ export default {
     }
   }
 }
+.left{
+  left: -700rpx !important;
+}
+.right{
+  left: 700rpx !important;
+}
+.down{
+  top: 0 !important;
+}
+.fadein{
+  opacity: 1 !important;
+}
 .card-container{
   z-index: -1;
   width: 80%;
   margin: 0 auto;
-  // position: relative; top: -200rpx;
-  animation: down 1s ease-in-out forwards;
+  position: relative;
+  transition: all 1s;
+  left: 0;
+  top: -800rpx;
+  // animation: down 1s ease-in-out forwards;
 }
 .bottom-container{
-  height: 76rpx;
+  transition: opacity 1s;
+  opacity: 0;
+  height: 140rpx;
   display: flex;
   justify-content: space-around;
   border-top-left-radius: 40rpx;
@@ -288,17 +310,17 @@ export default {
     align-items: center;
   }
 }
-.hasCard{
-  animation: show 1s ease-in forwards;
-}
-@keyframes show {
-  from {height: 0; opacity: 0;}
-  to {height:160rpx; opacity: 1;}
-}
-.noCard{
-  display:none;
-  animation: show 1s backwards;
-}
+// .hasCard{
+//   // animation: show 1s ease-in forwards;
+// }
+// @keyframes show {
+//   from {height: 0; opacity: 0;}
+//   to {height:160rpx; opacity: 1;}
+// }
+// .noCard{
+//   display:none;
+//   // animation: show 1s backwards;
+// }
 .page-container{
   // padding-bottom: 200rpx;
 }

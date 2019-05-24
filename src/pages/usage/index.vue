@@ -201,11 +201,11 @@ export default {
     this.getVocrecords()
     wx.loadFontFace({
       family: 'Bold',
-      source: 'url("http://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
+      source: 'url("https://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
     })
     wx.loadFontFace({
       family: 'worksans',
-      source: 'url("http://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
+      source: 'url("https://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
     })
   }
 }

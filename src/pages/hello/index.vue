@@ -1,8 +1,8 @@
 <template>
   <div class="page-container" :style="'background-image:url('+wallpaperUrl[index]+');'">
-    <div class="title-container fade-in" :style="'color:'+titleColor[index]+';'">Abandon单词</div>
-    <div class="explain-container fade-in" :style="'color:'+titleColor[index]+';'">fantastic tool for memorize</div>
-    <div class="login-container fade-in">
+    <div :class="['title-container',{'fade-in':fadein}]" :animation="fadeAnimation" :style="'color:'+titleColor[index]+';'">Abandon单词</div>
+    <div :class="['explain-container',{'fade-in':fadein}]" :style="'color:'+titleColor[index]+';'">fantastic tool for memorize</div>
+    <div :class="['login-container',{'fade-in':fadein}]">
       <button class="button" open-type="getUserInfo" @getuserinfo="doLogin" :style="'background:'+buttonColor[index]+';color:'+beginColor[index]+';'">开始学习</button>
     </div>
   </div>
@@ -15,13 +15,13 @@ export default {
   data () {
     return {
       wallpaperUrl: [
-        'http://img.xhfkindergarten.cn/wallpaper1',
-        'http://img.xhfkindergarten.cn/wallpaper2',
-        'http://img.xhfkindergarten.cn/wallpaper3',
-        'http://img.xhfkindergarten.cn/wallpape4',
-        'http://img.xhfkindergarten.cn/wallpaper5',
-        'http://img.xhfkindergarten.cn/wallpaper6',
-        'http://img.xhfkindergarten.cn/wallpaper77'
+        'https://img.xhfkindergarten.cn/wallpaper1',
+        'https://img.xhfkindergarten.cn/wallpaper2',
+        'https://img.xhfkindergarten.cn/wallpaper3',
+        'https://img.xhfkindergarten.cn/wallpape4',
+        'https://img.xhfkindergarten.cn/wallpaper5',
+        'https://img.xhfkindergarten.cn/wallpaper6',
+        'https://img.xhfkindergarten.cn/wallpaper77'
       ],
       // 墙纸张数
       wallpaperNum: 7,
@@ -54,7 +54,9 @@ export default {
         '#414d3f',
         '#e4dae3'
       ],
-      index: ''
+      index: '',
+      // 渐入动画
+      fadein: false
     }
   },
   computed: {
@@ -106,33 +108,54 @@ export default {
           }
         })
       })
+    },
+    fadein () {
+      // 调用微信小程序动画接口
+      const animation = wx.createAnimation({
+        duration: 1000,
+        timingFunction: 'ease-in-out'
+      })
+      // animation.opacity(0).step({duration: 0}).step()
+      animation.opacity(1).step()
+      this.fadeAnimation = animation
     }
   },
   mounted () {
     wx.loadFontFace({
       family: 'Bold',
-      source: 'url("http://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
+      source: 'url("https://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
     })
     this.index = Math.floor(Math.random() * this.wallpaperNum)
-    this.$message.success()
+    // this.fadein()
+    setTimeout(() => {
+      this.fadein = true
+    }, 1000)
+  },
+  // 出现时
+  onShow () {
+
   }
 }
 </script>
 
 <style lang="less" scoped>
 .fade-in{
-  animation: fade 2s ease-in-out forwards;
+  // animation: fade 2s ease-in-out forwards;
+  opacity: 1 !important;
 }
-@keyframes fade {
-  0% {
-    opacity: 0;
-  }
-  50% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
+// @keyframes fade {
+//   0% {
+//     opacity: 0;
+//   }
+//   50% {
+//     opacity: 0;
+//   }
+//   100% {
+//     opacity: 1;
+//   }
+// }
+div{
+  transition: opacity 1.5s;
 }
 .page-container{
   position: fixed;
@@ -143,6 +166,7 @@ export default {
   background-size: cover;
   background-repeat: no-repeat;
   .title-container{
+    opacity: 0;
     font-family: 'Bold';
     margin-top: 200rpx;
     color: #3F4C50;
@@ -153,12 +177,14 @@ export default {
     font-weight: bolder;
   }
   .explain-container{
+    opacity: 0;
     font-family: 'worksans';
     font-size: 32rpx;
     font-weight:thin;
     padding: 0 40rpx;
   }
   .login-container{
+    opacity: 0;
     position: absolute;
     bottom: 150rpx;
     width: 100%;

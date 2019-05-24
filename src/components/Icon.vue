@@ -48,5 +48,9 @@ div{
     width: 70rpx;
     height: 70rpx;
   }
+  .large{
+    width: 100rpx;
+    height: 100rpx;
+  }
 }
 </style>

@@ -1,11 +1,11 @@
 <template>
   <div class="page-container">
-    <div :class="[{'leave':leave},{'enter':enter},'card-container']">
-      <wordcard v-if="cardInfo" :cardSide="cardSide" :wordInfo="cardInfo"></wordcard>
+    <div :class="[{'down':down},{'left':left},{'right':right},'card-container']">
+      <wordcard v-if="cardInfo" :test="false" :cardSide="cardSide" :wordInfo="cardInfo"></wordcard>
     </div>
     <div v-if="index===20" class="bird-container">
       <div class="wrapper">
-        <img class="bird" src="http://img.xhfkindergarten.cn/default-bird.png">
+        <img class="bird" src="https://img.xhfkindergarten.cn/default-bird.png">
         <div class="word">恭喜你完成了一组单词:)</div>
       </div>
       
@@ -17,7 +17,7 @@
         <button @click="getMore" class="more">继续</button>
       </div>
     </div>
-    <div :class="cardInfo?'bottom-container hasCard':'noCard'">
+    <div :class="[{'fadein':task.length>0},'bottom-container']">
       <button @click="remove">
         <Icon icon="cross2"></Icon>
       </button>
@@ -44,10 +44,13 @@ export default {
       cardSide: true,
       // 是否可以进入下一卡片
       next: false,
-      // 加入动画
-      enter: false,
-      // 离开动画
-      leave: false,
+      down: false,
+      left: false,
+      right: false,
+      // // 加入动画
+      // enter: false,
+      // // 离开动画
+      // leave: false,
       // 背到了第几个单词
       index: '',
       // 指定书
@@ -70,6 +73,7 @@ export default {
       deep: true
     },
     async index (newValue, oldValue) {
+      console.log('index change')
       if (this.task.length === 0) {
         return
       }
@@ -77,17 +81,20 @@ export default {
         this.updateSchedule()
         this.$message.success('congratuations!')
         wx.setStorageSync('index', 0)
-        this.leave = false
-        this.enter = false
+        // this.leave = false
+        // this.enter = false
         this.cardInfo = ''
         return
       }
       wx.setStorageSync('index', newValue)
       this.cardInfo = ''
-      this.enter = false
+      this.down = false
+      this.left = false
+      this.right = false
+      // this.enter = false
       const cardInfo = await this.$request(`${config.host}/word/oneWord?word=${this.task[newValue].vocabulary}`)
-      this.leave = false
       this.cardInfo = cardInfo.word
+      this.down = true
     }
   },
   computed: {
@@ -101,8 +108,8 @@ export default {
   methods: {
     // 初始化页面
     initPage () {
-      this.leave = false
-      this.enter = false
+      // this.leave = false
+      // this.enter = false
       this.cardSide = true
       this.cardInfo = ''
     },
@@ -140,31 +147,35 @@ export default {
       this.getTask()
       this.index = 0
     },
-    remove () {
-      this.leave = true
+    async remove () {
+      this.left = true
+      const openId = wx.getStorageSync('userInfo').openId
+      const res = await this.$request(`${config.host}/word/addToday?openId=${openId}`)
+      console.log(res)
       setTimeout(() => {
         this.index++
-      }, 600)
-      this.cardSide = true
+        this.cardSide = true
+      }, 1000)
     },
     async add () {
-      this.enter = true
+      this.right = true
       const openId = wx.getStorageSync('userInfo').openId
       const res = await this.$request(`${config.host}/word/addCard`, 'POST', {
         openId,
         isFree: 1,
         voc: this.cardInfo.word_name
       })
-      console.log(res)
       if (res.success) {
+        const res1 = await this.$request(`${config.host}/word/addToday?openId=${openId}`)
+        console.log(res1)
         this.$message.success('添加卡片成功', 1000)
       } else {
         this.$message.warning(res.msg)
       }
       setTimeout(() => {
         this.index++
-      }, 600)
-      this.cardSide = true
+        this.cardSide = true
+      }, 1000)
     },
     reverse () {
       this.cardSide = !this.cardSide
@@ -180,10 +191,11 @@ export default {
     }
   },
   async mounted () {
-    this.getTask()
+    await this.getTask()
     // 获取当前的index
     const index = wx.getStorageSync('index')
     if (index) {
+      console.log('读取进度')
       this.index = index
     } else {
       this.index = 0
@@ -193,47 +205,62 @@ export default {
 </script>
 <style lang="less" scoped>
 .enter {
-  animation: enter 0.8s ease-in-out forwards !important;
+  // animation: enter 0.8s ease-in-out forwards !important;
 }
-@keyframes enter {
-  from {
-    position: relative;
-    left:0;
-  }
-  to {
-    position: relative;
-    left: 800rpx;
-  }
-}
+// @-webkit-keyframes enter {
+//   from {
+//     position: relative;
+//     left:0;
+//   }
+//   to {
+//     position: relative;
+//     left: 800rpx;
+//   }
+// }
 .leave{
-  animation: leave 0.8s ease-in-out forwards !important;
+  // animation: leave 0.8s ease-in-out forwards !important;
 }
-@keyframes leave {
-  from {
-    position: relative;
-    left:0;
-  }
-  to {
-    position: relative;
-    left: -800rpx;
-  }
+// @-webkit-keyframes leave {
+//   from {
+//     position: relative;
+//     left:0;
+//   }
+//   to {
+//     position: relative;
+//     left: -800rpx;
+//   }
+// }
+.left{
+  left: -700rpx !important;
+}
+.right{
+  left: 700rpx !important;
+}
+.down{
+  top: 0 !important;
+}
+.fadein{
+  opacity: 1 !important;
 }
 .card-container{
-  z-index: -1;
+  z-index: 50;
   width: 80%;
   margin: 0 auto;
   padding-top: 60rpx;
-  // position: relative; top: -200rpx;
-  animation: down 1s ease-in-out forwards;
+  position: relative;
+  left: 0;
+  top: -800rpx;
+  transition: all 1s;
+  // animation: down 1s ease-in-out forwards;
 }
-@keyframes appear {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
+// @-webkit-keyframes appear {
+//   from {
+//     opacity: 0;
+//   }
+//   to {
+//     opacity: 1;
+//   }
+// }
 .bird-container{
   animation: appear 0.5s ease-in-out forwards;
   width: 100%;
@@ -301,7 +328,11 @@ export default {
   }
 }
 .bottom-container{
+  z-index:51;
+  transition: opacity 1s;
+  opacity: 0;
   display: flex;
+  height: 140rpx;
   justify-content: space-around;
   border-top-left-radius: 40rpx;
   border-top-right-radius: 40rpx;
@@ -316,21 +347,16 @@ export default {
     align-items: center;
   }
 }
-.hasCard{
-  animation: show 1s ease-in forwards;
-}
-@keyframes show {
-  from {height: 0; opacity: 0;}
-  to {height:160rpx; opacity: 1;}
-}
-.noCard{
-  display:none;
-  animation: show 1s backwards;
-}
-@keyframes down {
-  from {position: relative; top: -500rpx;}
-  to {position: relative; top: 0;}
-}
+
+// @-webkit-keyframes show {
+//   from {height: 0; opacity: 0;}
+//   to {height:160rpx; opacity: 1;}
+// }
+
+// @-webkit-keyframes down {
+//   from {position: relative; top: -500rpx;}
+//   to {position: relative; top: 0;}
+// }
 .page-container{
   padding-bottom: 200rpx;
 }

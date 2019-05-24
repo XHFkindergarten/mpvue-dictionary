@@ -1,7 +1,7 @@
 <template>
   <div class="card-container">
     <div class="pic-container">
-      <img class="pic" :src="wordInfo.labelImg" :onload="onLoad">
+      <img class="pic" :src="wordInfo.labelImg">
     </div>
     <div :class="cardSide?'content-container':'content-container max-height'">
       <div v-if="(test&&!cardSide)||!test" class="word-name">{{wordInfo.word_name}}</div>
@@ -47,7 +47,7 @@ import Icon from '@/components/Icon'
 export default {
   data () {
     return {
-      picUrl: 'http://img.xhfkindergarten.cn/default_label_img.jpg',
+      picUrl: 'https://img.xhfkindergarten.cn/default_label_img.jpg',
       // 音频实例
       ukAudio: '',
       usAudio: '',
@@ -92,12 +92,15 @@ export default {
   mounted () {
     wx.loadFontFace({
       family: 'nolan',
-      source: 'url("http://img.xhfkindergarten.cn/Nolan-Bold_0.ttf")'
+      source: 'url("https://img.xhfkindergarten.cn/Nolan-Bold_0.ttf")'
     })
   }
 }
 </script>
 <style lang="less" scoped>
+.none{
+  display: none;
+}
 .down {
   transform: rotate(180deg);
   transition: all 0.6s;

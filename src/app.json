@@ -1,15 +1,16 @@
 {
   "pages": [
-    "pages/hello/main",
-    "pages/main/main",
+    "pages/me/main",
+    "pages/myCard/main",
     "pages/test/main",
+    "pages/hello/main",
     "pages/vocGroup/main",
     "pages/remember/main",
+    "pages/main/main",
     "pages/usage/main",
     "pages/select/main",
     "pages/search/main",
-    "pages/book/main",
-    "pages/me/main"
+    "pages/book/main"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -25,16 +26,19 @@
     "list": [{
       "pagePath": "pages/main/main",
       "iconPath": "static/tabs/home.png",
-      "selectedIconPath": "static/tabs/home-active.png"
+      "selectedIconPath": "static/tabs/home-active.png",
+      "text": "cards"
     }, {
       "pagePath": "pages/usage/main",
       "iconPath": "static/tabs/example.png",
-      "selectedIconPath": "static/tabs/example-active.png"
+      "selectedIconPath": "static/tabs/example-active.png",
+      "text": "daily"
     }, 
     {
       "pagePath": "pages/me/main",
       "iconPath": "static/tabs/me.png",
-      "selectedIconPath": "static/tabs/me-active.png"
+      "selectedIconPath": "static/tabs/me-active.png",
+      "text": "me"
     }
   ],
     "position": "bottom"

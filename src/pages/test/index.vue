@@ -1,25 +1,25 @@
 <template>
-  <div :class="[{'background':toEnd}, {'page-container':!toEnd}]" :style="'min-height:'+windowHeight+'px;'">
-    <div :class="[{leave:leave},{enter:enter},'card-container']">
+  <div :class="[{'background':toEnd||!hasTask}, {'page-container':!toEnd}]" style="min-height:100vh;">
+    <div :class="[{'down':down},{'right':right},'card-container']">
       <wordcard v-if="cardInfo&&task[index].isFree==1" :test="true" :cardSide="!next" :wordInfo="cardInfo"></wordcard>
       <freecard v-if="cardInfo&&task[index].isFree==0" :cardSide="!next" :wordInfo="cardInfo"></freecard>
     </div>
-    <div v-if="!toEnd" class="answer-tip">
+    <div v-if="task.length>0" :class="[{'fadein':task.length>0},'answer-tip']">
       Your answer:
     </div>
-    <div v-if="!toEnd" class="input-container">
+    <div :class="[{'fadein':task.length>0},'input-container']">
       <input v-model="inputAnswer" disable class="single-input" type="text" maxlength="-1">
     </div>
-    <div v-if="toEnd" class="bird-container">
+    <div v-if="toEnd||!hasTask" class="bird-container">
       <div class="wrapper">
-        <img class="bird" src="http://img.xhfkindergarten.cn/boxer-bird.png">
+        <img class="bird" src="https://img.xhfkindergarten.cn/boxer-bird.png">
         <div class="word">恭喜完成所有卡片</div>
       </div>
       <div class="btn-container">
         <button @click="backTo" class="back">返回</button>
       </div>
     </div>
-    <div :class="cardInfo?'bottom-container hasCard':'noCard'">
+    <div :class="['bottom-container',{fadein:task.length>0}]">
       <button @click="checkAns" v-show="!next">
         <Icon icon="correct"></Icon>
       </button>
@@ -70,7 +70,11 @@ export default {
       enter: false,
       leave: false,
       inputAnswer: '',
-      autoFocus: true
+      // 动画控制变量
+      down: false,
+      right: false,
+      hasTask: true
+
     }
   },
   computed: {
@@ -90,9 +94,6 @@ export default {
         }
       }
       return arr
-    },
-    hasTask () {
-      return this.task.length > 0
     }
   },
   components: {
@@ -103,12 +104,11 @@ export default {
   watch: {
     async index (newValue, oldValue) {
       this.cardInfo = ''
-      this.enter = true
+      // this.enter = true
+      this.down = false
+      this.right = false
       this.answer = ''
       this.inputAnswer = ''
-      setTimeout(() => {
-        this.enter = false
-      }, 1100)
       let cardInfo
       if (this.task[newValue].isFree === 1) {
         cardInfo = await this.$request(`${config.host}/word/oneWord?word=${this.task[newValue].voc}`)
@@ -117,6 +117,7 @@ export default {
         this.cardInfo = this.task[newValue]
       }
       this.next = false
+      this.down = true
       this.timeGap = this.task[newValue].nextGap
       if (this.task[newValue].isFree === 0) {
         this.answer = this.cardInfo.freeBack
@@ -152,7 +153,8 @@ export default {
       const openId = await wx.getStorageSync('userInfo').openId
       const res = await this.$request(`${config.host}/word/getMyTask?openId=${openId}`)
       this.task = res.cards
-      if (!this.hasTask) {
+      if (!res || res.cards.length === 0) {
+        this.hasTask = false
         return
       }
       this.index = 0
@@ -172,14 +174,19 @@ export default {
     },
     // 下一张卡片
     async nextCard () {
-      this.leave = true
+      this.right = true
       setTimeout(() => {
-        this.leave = false
+        this.right = false
         this.index++
-      }, 800)
-      if (this.index === this.task.length - 1) {
-        // TODO
+      }, 1000)
+      if (this.index === this.task.length) {
         console.log('Cards out')
+        // console.log('更新', this.timeGap)
+        // const res = await this.$request(`${config.host}/word/updateTimeGap`, 'POST', {
+        //   id: this.task[this.index].id,
+        //   timeGap: this.timeGap
+        // })
+        // console.log(res)
       } else {
         console.log('更新', this.timeGap)
         const res = await this.$request(`${config.host}/word/updateTimeGap`, 'POST', {
@@ -217,38 +224,38 @@ export default {
     this.initPage()
     wx.loadFontFace({
       family: 'worksans',
-      source: 'url("http://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
+      source: 'url("https://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
     })
   }
 }
 </script>
 <style lang="less" scoped>
-.enter {
-  animation: enter 1s ease-in-out forwards !important;
-}
-.leave{
-  animation: leave 0.8s ease-in-out forwards !important;
-}
-@keyframes enter {
-  from {
-    position: relative;
-    top:-800px;
-  }
-  to {
-    position: relative;
-    top:0;
-  }
-}
-@keyframes leave {
-  from {
-    position: relative;
-    left:0;
-  }
-  to {
-    position: relative;
-    left: -800rpx;
-  }
-}
+// .enter {
+//   animation: enter 1s ease-in-out forwards !important;
+// }
+// .leave{
+//   animation: leave 0.8s ease-in-out forwards !important;
+// }
+// @keyframes enter {
+//   from {
+//     position: relative;
+//     top:-800px;
+//   }
+//   to {
+//     position: relative;
+//     top:0;
+//   }
+// }
+// @keyframes leave {
+//   from {
+//     position: relative;
+//     left:0;
+//   }
+//   to {
+//     position: relative;
+//     left: -800rpx;
+//   }
+// }
 @keyframes appear {
   from {
     opacity: 0;
@@ -300,14 +307,28 @@ export default {
     }
   }
 }
+.right{
+  left: 700rpx !important;
+}
+.down{
+  top: 0 !important;
+}
+.fadein{
+  opacity: 1 !important;
+}
 .card-container{
+  position: relative;
+  left: 0;
+  top: -800rpx;
   z-index: -1;
   width: 80%;
   margin: 0 auto;
+  transition: all 1s;
   // position: relative; top: -200rpx;
-  animation: down 1s ease-in-out forwards;
+  // animation: down 1s ease-in-out forwards;
 }
 .answer-tip{
+  opacity: 0;
   font-size: 14px;
   font-family: 'worksans';
   padding-left: 100rpx;
@@ -315,16 +336,18 @@ export default {
   font-weight: bolder;
   color: #999;
   margin-top: 100rpx;
-  animation: slowup 1s ease-in-out forwards;
+  // animation: slowup 1s ease-in-out forwards;
 }
 .input-container{
+  opacity: 0;
   width: 80%;
   margin: 0 auto;
   display: flex;
   justify-content: center;
   align-items: center;
   .single-input{
-    animation: slowup 1s ease-in-out forwards;
+    z-index:0;
+    // animation: slowup 1s ease-in-out forwards;
     width: 100%;
     height: 80rpx;
     line-height: 80rpx;
@@ -335,18 +358,22 @@ export default {
     text-align: center;
     margin: 0 10rpx 0;
   }
-  @keyframes slowup {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  }
+  // @keyframes slowup {
+  //   from {
+  //     opacity: 0;
+  //   }
+  //   to {
+  //     opacity: 1;
+  //   }
+  // }
+}
+.fadein{
+  opacity: 1 !important;
 }
 .bottom-container{
-  height: 76rpx;
+  height: 140rpx;
   display: flex;
+  opacity: 0;
   justify-content: space-around;
   border-top-left-radius: 40rpx;
   border-top-right-radius: 40rpx;
@@ -362,17 +389,17 @@ export default {
     align-items: center;
   }
 }
-.hasCard{
-  animation: show 1s ease-in forwards;
-}
-@keyframes show {
-  from {height: 0; opacity: 0;}
-  to {height:160rpx; opacity: 1;}
-}
-.noCard{
-  display:none;
-  animation: show 1s backwards;
-}
+// .hasCard{
+//   animation: show 1s ease-in forwards;
+// }
+// @keyframes show {
+//   from {height: 0; opacity: 0;}
+//   to {height:160rpx; opacity: 1;}
+// }
+// .noCard{
+//   display:none;
+//   animation: show 1s backwards;
+// }
 .page-container{
   padding-bottom: 200rpx;
 }

@@ -24,7 +24,7 @@ export default {
     // })
     wx.loadFontFace({
       family: 'Bold',
-      source: 'url("http://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
+      source: 'url("https://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
     })
     // wx.loadFontFace({
     //   family: 'Eng',

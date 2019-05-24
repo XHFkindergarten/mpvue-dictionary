@@ -1,5 +1,5 @@
 <template> 
-  <div style="position:relative;">
+  <div style="position:relative;padding-bottom:60rpx;">
     <div class="search-container">
       <input class="search" placeholder-style="font-size:14px;font-family:'thin';" @focus="searchFocus" placeholder="请输入搜索单词" type="text">
     </div>
@@ -18,7 +18,7 @@
       <div v-if="isCreate&&!realPath" @click="uploadImg" class="img-container">
         <Icon icon="add1"></Icon>
       </div>
-      <div v-if="isCreate&&realPath" class="img-preview">
+      <div v-if="isCreate&&realPath" @click="uploadImg" class="img-preview">
         <img class="preview" :src="realPath">
       </div>
       <div v-if="isCreate" class="img-tip">为获得最佳显示效果,请尽量上传比例为3:2的横版图片</div>
@@ -154,10 +154,16 @@ export default {
     },
     // 点击开始学习
     begin () {
-      wx.navigateTo({
-        // url: '/pages/remember/main'
-        url: '/pages/test/main'
-      })
+      const mode = wx.getStorageSync('mode')
+      if (mode) {
+        wx.navigateTo({
+          url: '/pages/test/main'
+        })
+      } else {
+        wx.navigateTo({
+          url: '/pages/remember/main'
+        })
+      }
     },
     searchFocus () {
       wx.navigateTo({
@@ -190,15 +196,15 @@ export default {
     this.getNum()
     wx.loadFontFace({
       family: 'worksans',
-      source: 'url("http://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
+      source: 'url("https://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
     })
     // await wx.loadFontFace({
     //   family: 'comfortaBold',
-    //   source: 'url("http://img.xhfkindergarten.cn/ComfortaBold")'
+    //   source: 'url("https://img.xhfkindergarten.cn/ComfortaBold")'
     // })
     wx.loadFontFace({
       family: 'Bold',
-      source: 'url("http://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
+      source: 'url("https://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
     })
   },
   // 下拉刷新事件
@@ -322,7 +328,16 @@ export default {
     font-family: 'thin';
     line-height: 80rpx;
   }
+  @keyframes slowup {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
   .num-container{
+    animation: slowup 1s ease-in-out forwards;
     width: 80%;
     height: 400rpx;
     margin-top: 40rpx;

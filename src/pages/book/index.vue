@@ -66,13 +66,32 @@ export default {
       }).catch(err => {
         this.$message.error(err)
       })
+      console.log('select book', res)
       if (res.success) {
         this.$message.success('选择成功')
+        // 更新信息， 主要是选择的类别信息放入localStorage
+        wx.login({
+          success (res) {
+            wx.request({
+              url: `${config.host}/login`,
+              method: 'POST',
+              data: {
+                code: res.code
+              },
+              success (res) {
+                if (res.data.success) {
+                  console.log(res)
+                  wx.setStorageSync('userInfo', res.data.userInfo)
+                }
+              }
+            })
+          }
+        })
         setTimeout(() => {
           wx.switchTab({
             url: '/pages/main/main'
           })
-        }, 2000)
+        }, 1000)
       }
     },
     // 返回
@@ -110,11 +129,11 @@ export default {
   async mounted () {
     wx.loadFontFace({
       family: 'Bold',
-      source: 'url("http://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
+      source: 'url("https://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
     })
     wx.loadFontFace({
       family: 'worksans',
-      source: 'url("http://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
+      source: 'url("https://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
     })
     this.getBookList()
   }
