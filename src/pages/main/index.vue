@@ -115,6 +115,8 @@ export default {
       wx.showLoading({
         title: '上传图片ing'
       })
+      console.log('upload qiniu', that.tempPath)
+      console.log('token', that.QiniuToken)
       wx.uploadFile({
         url: 'https://up-z2.qiniup.com',
         name: 'file',
@@ -193,6 +195,9 @@ export default {
     // }
   },
   mounted () {
+    wx.showShareMenu({
+      withShareTicket: true
+    })
     this.getNum()
     wx.loadFontFace({
       family: 'worksans',

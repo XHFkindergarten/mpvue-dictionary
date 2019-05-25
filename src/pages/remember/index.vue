@@ -18,7 +18,7 @@
         <Icon icon="sad"></Icon>
       </button>
       <button v-show="!next" @click="yes">
-        <Icon icon="happy"></Icon>
+        <Icon icon="Happy"></Icon>
       </button>
       <button @click="setTime" v-show="next">
         <Icon size='mid-lar' icon="time"></Icon>
@@ -100,8 +100,12 @@ export default {
       // }, 1100)
       let cardInfo
       if (this.task[newValue].isFree === 1) {
+        wx.showLoading({
+          title: '卡片正在掉落...'
+        })
         cardInfo = await this.$request(`${config.host}/word/oneWord?word=${this.task[newValue].voc}`)
         this.cardInfo = cardInfo.word
+        wx.hideLoading()
       } else {
         this.cardInfo = this.task[newValue]
       }
@@ -129,8 +133,12 @@ export default {
       this.task = []
       this.cardInfo = ''
       const openId = await wx.getStorageSync('userInfo').openId
+      wx.showLoading({
+        title: '正在获取卡片流...'
+      })
       const res = await this.$request(`${config.host}/word/getMyTask?openId=${openId}`)
       this.task = res.cards
+      wx.hideLoading()
       if (!res || res.cards.length === 0) {
         this.hasTask = false
         return
@@ -281,7 +289,8 @@ export default {
   opacity: 1 !important;
 }
 .card-container{
-  z-index: -1;
+  padding-bottom: 160rpx;
+  z-index: 50;
   width: 80%;
   margin: 0 auto;
   position: relative;
@@ -291,6 +300,7 @@ export default {
   // animation: down 1s ease-in-out forwards;
 }
 .bottom-container{
+  z-index: 51;
   transition: opacity 1s;
   opacity: 0;
   height: 140rpx;

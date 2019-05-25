@@ -14,8 +14,8 @@
       </div>
       <div v-if="!cardSide">
         <div class="pron" v-for="pron in wordInfo.symbols" :key="pron.ph_en">
-          <div @click="audioUk(pron)" class="uk">英 {{pron.ph_en}}<img src="/static/icon/sound.png"></div>
-          <div @click="audioUs(pron)" class="uk">美 {{pron.ph_am}}<img src="/static/icon/sound.png"></div>
+          <div @click="audioUk(pron)" class="uk">英 {{pron.ph_en}}<img v-if="pron.ph_en_mp3" src="/static/icon/sound.png"></div>
+          <div @click="audioUs(pron)" class="uk">美 {{pron.ph_am}}<img v-if="pron.ph_am_mp3" src="/static/icon/sound.png"></div>
           <div v-for="(part,_index) in pron.parts" :key="_index" class="meaning">
             {{part.part}} {{part.means}}
           </div>
@@ -65,26 +65,42 @@ export default {
   },
   methods: {
     toggleSent () {
+      // 显示/隐藏例句
       this.showSent = !this.showSent
     },
     audioUk (pron) {
+      console.log('播放音频')
+      wx.showLoading({
+        title: '...咳咳'
+      })
       // 创建音频实例
       const audio = wx.createInnerAudioContext()
       audio.autoplay = true
       audio.src = pron.ph_en_mp3
       audio.onPlay(() => {
+        wx.hideLoading()
         // 播放时执行
+        console.log('播放suc')
       })
       audio.onError((res) => {
+        wx.hideLoading()
         this.$message.error(res)
       })
     },
     audioUs (pron) {
+      wx.showLoading({
+        title: '...咳咳'
+      })
       // 创建音频实例
       const audio = wx.createInnerAudioContext()
       audio.autoplay = true
       audio.src = pron.ph_am_mp3
+      audio.onPlay(() => {
+        wx.hideLoading()
+        console.log('播放')
+      })
       audio.onError((res) => {
+        wx.hideLoading()
         this.$message.error(res)
       })
     }

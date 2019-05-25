@@ -2,11 +2,13 @@
   <div class="page-container">
     <div class="gray-container">
       <img class="icon" src="/static/icon/cards.png">
-      <div class="title">My Card</div>
+      <div class="title">My Card {{cards.length}}</div>
     </div>
-    <div v-if="cards.length>0" :class="[{'up':cardShow},'content-container']">
-      <countcard v-for="(card,index) in cards" :key="index" :cardInfo="card"></countcard>
+    <div v-if="cards&&cards.length>0" :class="[{'up':cardShow},'content-container']">
+      <countcard v-for="(card,index) in showList" :key="index" :cardInfo="card"></countcard>
     </div>
+    <div v-if="!toEnd&&cards.length>0" class="bottom-tip">{{bottomLoading?tip2:tip1}}</div>
+    <div v-if='toEnd&&cards.length>0' class="bottom-tip">{{tip3}}</div>
   </div>
 </template>
 
@@ -17,34 +19,72 @@ export default {
   data () {
     return {
       cards: [],
-      cardShow: false
+      cardShow: false,
+      index: 1,
+      size: 10,
+      bottomLoading: false,
+      tip1: 'pull to load more<(▰˘◡˘▰)>',
+      tip2: 'loading...(◑‿◐)(◑‿◐)(◑‿◐)',
+      tip3: 'no more cards ༼༎ຶ෴༎ຶ༽'
     }
   },
   components: {
     countcard
   },
   computed: {
+    showList () {
+      return this.cards.slice(0, this.index * this.size)
+    },
+    toEnd () {
+      return Math.ceil(this.cards.length / this.size) === this.index
+    }
   },
   methods: {
     // 获取卡片列表
     async getMyCards () {
+      wx.showLoading({
+        title: 'Loading...'
+      })
       const openId = wx.getStorageSync('userInfo').openId
       const res = await this.$request(`${config.host}/mycard?openId=${openId}`)
       this.cards = res.cards
+      wx.hideLoading()
       // this.cardShow = true
     }
   },
+
+  onReachBottom () {
+    this.bottomLoading = true
+    setTimeout(() => {
+      this.bottomLoading = false
+      if (Math.ceil(this.cards.length / 10) !== this.index) {
+        this.index++
+      }
+    }, 500)
+  },
+  onPullDownRefresh () {
+    this.getMyCards()
+  },
+  onShow () {
+    this.cards = []
+    this.getMyCards()
+    this.index = 1
+  },
   async mounted () {
-    wx.showLoading({
-      title: 'Loading...'
+    wx.loadFontFace({
+      family: 'worksans',
+      source: 'url("https://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
     })
-    await this.getMyCards()
-    wx.hideLoading()
     wx.loadFontFace({
       family: 'Bold',
       source: 'url("https://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
     })
-    this.cardShow = true
+
+    await this.getMyCards()
+    setTimeout(() => {
+      this.cardShow = true
+    }, 500)
+    // this.cardShow = true
   }
 }
 </script>
@@ -53,8 +93,15 @@ export default {
   top:0 !important;
 }
 .page-container{
+  padding-bottom: 20rpx;
+  .bottom-tip{
+    font-family: 'wordsans';
+    font-size: 28rpx;
+    text-align: center;
+    color: #706F74;
+  }
   .content-container{
-    transition: all 1s;
+    transition: top 1s;
     position: relative;
     top: 800rpx;
     margin: 0 auto;

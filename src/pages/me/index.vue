@@ -23,7 +23,20 @@
           <div class="text">Test Mode</div>
           <switch style="margin-top:20rpx;" :checked="isTest" v-model="isTest" color="#587AA5" @change="toggleMode"></switch>
         </div>
-        
+        <div class="reselect" @click="reSelect">
+          <Icon icon="bookmark" size="large"></Icon>
+          <div class="text">reselect book</div>
+        </div>
+        <div @click="share" class="punch">
+          <Icon icon="share" size="mid-lar"></Icon>
+          <div class="text">share</div>
+        </div>
+      </div>
+    </div>
+    <div v-if="showPic" class="share-container" @click="clickoutside">
+      <canvas @click.stop="clickCanvas"  canvas-id="shareCanvas" style="height:533px;width:300px;"></canvas>
+      <div :class="[{'showBtn':showBtn},'btn-container']">
+        <button @click.stop="saveImg">保存图片</button>
       </div>
     </div>
   </div>
@@ -33,25 +46,134 @@
 import Icon from '@/components/Icon'
 // import store from '@/vuex/store'
 import config from '@/config'
+
 export default {
   data () {
     return {
       hasLogin: false,
       userinfo: {
         nickName: '用户授权',
-        avatarUrl: '/static/images/default-avatar.png'
+        avatarUrl: 'https://wx.qlogo.cn/mmopen/vi_32/PiajxSqBRaEJ8Joib2X9MCDFEwBk7hfyfV8EdQyxJTYUzAXc49uIARhSRU8rJkTrl3G4vtNHsT3rMQbgecdp4Vsg/132'
       },
       isTest: false,
       // 今天学习过的卡片数量
-      cardNum: 0
+      cardNum: 0,
+      backgroundImg: 'https://img.xhfkindergarten.cn/share2.png',
+      canvas: '',
+      // 打卡天数
+      punchNum: 0,
+      // 是否显示获取打卡图片
+      showPic: false,
+      // 是否显示保存按钮
+      showBtn: false
     }
   },
-
+  // directives: {clickoutside},
   components: {
     Icon
   },
-
   methods: {
+    async share () {
+      this.showPic = true
+      await this.submitPunch()
+      await this.canvasgo()
+    },
+    clickCanvas (e) {
+      console.log('click canvas')
+    },
+    clickoutside (e) {
+      this.showPic = false
+      this.showBtn = false
+      this.canvas = ''
+    },
+    async submitPunch () {
+      const openId = wx.getStorageSync('userInfo').openId
+      const res = await this.$request(`${config.host}/punch?openId=${openId}`)
+      console.log(res)
+      if (res.hasPunch) {
+        this.$message.success('今天打过卡辣', 1000)
+      } else {
+        this.$message.success('打卡成功', 1000)
+      }
+      this.punchNum = res.punchNum
+    },
+    canvasgo () {
+      let that = this
+      wx.showLoading({
+        title: '画图ing...'
+      })
+      wx.getImageInfo({
+        src: that.userinfo.avatarUrl,
+        success: res1 => {
+          const avatar = res1.path
+          wx.getImageInfo({
+            src: this.backgroundImg,
+            success: async res2 => {
+              const ctx = wx.createCanvasContext('shareCanvas')
+              ctx.scale(300 / res2.width, 300 / res2.width)
+              ctx.drawImage(res2.path, 0, 0, 600, 1057)
+
+              // 写用户名
+              ctx.setTextAlign('left')
+              ctx.setFillStyle('#553F2A')
+              ctx.font = '30px Arial'
+              ctx.fillText(that.userinfo.nickName, 150, 90)
+              ctx.restore()
+              // 写卡片数量
+              ctx.setTextAlign('center')
+              ctx.setFillStyle('#553F2A')
+              ctx.font = '80px Bold'
+              ctx.fillText(that.cardNum, 300, 470)
+              ctx.restore()
+              // 绘制打卡天数
+              ctx.setTextAlign('left')
+              ctx.setFillStyle('#553F2A')
+              ctx.font = '26px Bold'
+              ctx.fillText(`累计打卡${that.punchNum}天`, 150, 140)
+              ctx.restore()
+              // 绘制用户头像
+              ctx.arc(90, 95, 40, 0, 2 * Math.PI)
+              ctx.clip()
+              ctx.drawImage(avatar, 50, 55, 80, 80)
+              await ctx.draw()
+              wx.hideLoading()
+              this.showBtn = true
+            }
+          })
+        }
+      })
+    },
+    saveImg () {
+      wx.canvasToTempFilePath({
+        canvasId: 'shareCanvas',
+        success: res3 => {
+          const tempFilePath = res3.tempFilePath
+          console.log(tempFilePath)
+          wx.saveImageToPhotosAlbum({
+            filePath: tempFilePath,
+            success: res4 => {
+              this.$message.success('保存成功,gkd分享到朋友圈8️⃣')
+              this.showPic = false
+              this.showBtn = false
+            }
+          })
+        }
+      })
+    },
+    reSelect () {
+      wx.showModal({
+        title: 'info',
+        content: '重新选择资料书,Abandon依然会为你保留当前资料书的进度(*＾ワ＾*)',
+        success (res) {
+          if (res.confirm) {
+            console.log('confirm reselect')
+            wx.navigateTo({
+              url: '/pages/select/main'
+            })
+          }
+        }
+      })
+    },
     toMyCard () {
       wx.navigateTo({
         url: '/pages/myCard/main'
@@ -81,10 +203,13 @@ export default {
       console.log(this.isTest)
     }
   },
-  mounted () {
+  async mounted () {
+    wx.showShareMenu({
+      withShareTicket: true
+    })
     // let app = getApp()
     // 获取用户信息
-    let userInfo = wx.getStorageSync('userInfo')
+    let userInfo = await wx.getStorageSync('userInfo')
     if (userInfo) {
       this.hasLogin = true
       this.userinfo = userInfo
@@ -95,6 +220,8 @@ export default {
       source: 'url("https://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
     })
     this.getMode()
+    // await this.submitPunch()
+    // await this.canvasgo()
   },
   onShow () {
     this.getToday()
@@ -108,6 +235,42 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  .share-container{
+    background: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top:0;
+    left:0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    .showBtn{
+      opacity: 1 !important;
+    }
+    .btn-container{
+      opacity: 0;
+      transition: all 1s;
+      width: 100%;
+      position: absolute;
+      bottom: 40rpx;
+      button{
+        height: 100rpx;
+        width:200rpx;
+        border-radius: 50rpx;
+        line-height: 100rpx;
+        font-size: 32rpx;
+        background: #e6e5e3;
+        color: #000;
+        z-index: 100;
+      }
+    }
+    canvas{
+      opacity: 1;
+      margin-top: 60rpx;
+    }
+  }
   .userinfo {
     width: 80%;
     background: #fff;
@@ -186,6 +349,38 @@ export default {
     .right-container{
       width: 49%;
       float: right;
+      .punch{
+        margin-top: 16rpx;
+        width: 100%;
+        padding: 40rpx 0;
+        background: #fff;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-item: center;
+        .text{
+          font-family: 'Bold';
+          text-align:center;
+          color: #707070;
+          margin-top: 40rpx;
+        }
+      }
+      .reselect{
+        margin-top: 16rpx;
+        width: 100%;
+        padding: 80rpx 0;
+        background: #fff;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-item: center;
+        .text{
+          font-family: 'Bold';
+          text-align:center;
+          color: #707070;
+          margin-top: 40rpx;
+        }
+      }
       .switch{
         border-top-right-radius: 40rpx;
         // height: 200rpx;

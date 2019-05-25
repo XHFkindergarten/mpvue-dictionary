@@ -183,13 +183,21 @@ export default {
     },
     // 获取单个单词的信息
     async showDetail (voc) {
+      wx.showLoading({
+        title: '获取单词信息ing'
+      })
       const res = await this.$request(`${config.host}/word/oneWord?word=${voc.vocInfo.vocabulary}`)
       console.log(res)
       this.vocDetail = res.word
+      wx.hideLoading()
+      wx.pageScrollTo({
+        scrollTop: 0,
+        duration: 500
+      })
     },
     async getVocrecords () {
       wx.showLoading({
-        title: '加载中'
+        title: '获取今日单词列表'
       })
       const openId = wx.getStorageSync('userInfo').openId
       const res = await this.$request(`${config.host}/word/getVocRecords?openId=${openId}`)
@@ -334,7 +342,7 @@ export default {
     }
   }
   .pre{
-    width: 100%;
+    width: 90%;
     padding: 30rpx;
     text-align: left;
     color: #706F74;
