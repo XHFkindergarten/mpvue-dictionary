@@ -19,8 +19,16 @@ const error = (msg, time = 3000) => {
     image: '/static/icon/cross.png'
   })
 }
+const find = (msg, time = 1000) => {
+  wx.showToast({
+    title: msg,
+    duration: time,
+    image: '/static/icon/dot.png'
+  })
+}
 export default {
   success,
   warning,
-  error
+  error,
+  find
 }

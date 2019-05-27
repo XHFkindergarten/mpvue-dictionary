@@ -12,15 +12,12 @@
     <div @click="chooseItem(word)" v-for="word in suggestList" :key="word.word" class="search-item">
       <searchItem :word="word"></searchItem>
     </div>
-    <div v-show="hasCard" class="card-container">
-      <wordcard :wordInfo="wordInfo" :cardSide="cardSide"></wordcard>
+    <div v-show="hasCard" :class="['card-container',{'down':down}]">
+      <wordcard :wordInfo="wordInfo"></wordcard>
     </div>
     <div :class="hasCard?'bottom-container hasCard':'noCard'">
       <button @click="removeCard">
         <Icon icon="crossb"></Icon>
-      </button>
-      <button @click="reverse">
-        <Icon icon="reverse"></Icon>
       </button>
       <button @click="addCard">
         <Icon icon="add"></Icon>
@@ -46,7 +43,9 @@ export default {
       // 用于显示的单词信息
       wordInfo: '',
       // 卡片是否处于正面
-      cardSide: true
+      cardSide: true,
+      // 卡片掉落动画
+      down: false
     }
   },
   components: {
@@ -93,10 +92,6 @@ export default {
     removeCard () {
       this.wordInfo = ''
     },
-    // 翻转卡片
-    reverse () {
-      this.cardSide = !this.cardSide
-    },
     async comfirmInput () {
       await this.searchWord(this.searchText)
       this.searchText = ''
@@ -108,9 +103,13 @@ export default {
       await this.searchWord(word.word)
     },
     async searchWord (input) {
+      this.$message.find('searching...')
       const res = await this.$request(`${config.host}/word/oneWord?word=${input}`)
       if (res.word.word_name) {
         this.wordInfo = res.word
+        setTimeout(() => {
+          this.down = true
+        }, 0)
       } else {
         this.$message.warning('词库暂无该单词,请在单词本手动添加单词')
       }
@@ -128,11 +127,14 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.down{
+  top: 0 !important;
+}
 .page-container{
   padding: 0 40rpx 200rpx;
   .search-container{
     position: relative;
-    z-index: 20;
+    z-index: 60;
     background-color: #fff;
     padding: 40rpx 0 20rpx;
     border-bottom: 1px solid #EEE;
@@ -184,17 +186,16 @@ export default {
     background: #EEE;
   }
   .card-container{
-    z-index: -1;
+    z-index: 50;
     width: 80%;
     margin: 0 auto;
-    // position: relative; top: -200rpx;
-    animation: down 1s ease-in-out forwards;
-  }
-  @keyframes down {
-    from {position: relative; top: -500rpx;}
-    to {position: relative; top: 0;}
+    position: relative;
+    top: -800rpx;
+    transition: all 1s;
+    // animation: down 1s ease-in-out forwards;
   }
   .bottom-container{
+    z-index: 60;
     display: flex;
     justify-content: space-around;
     border-top-left-radius: 40rpx;

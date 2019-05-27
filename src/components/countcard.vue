@@ -1,7 +1,7 @@
 <template>
   <div class="card-container">
     <div class="pic-container">
-      <img class="pic" :src="cardInfo.img">
+      <image class="pic" :src="cardInfo.img" mode="aspectFill"></image>
     </div>
     <div class="content-container">
       <div :class="[{'freeword':cardInfo.isFree===0}]">{{cardInfo.isFree===1?cardInfo.voc:cardInfo.front}}</div>

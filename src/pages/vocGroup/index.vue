@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <div :class="[{'down':down},{'left':left},{'right':right},'card-container']">
-      <wordcard v-if="cardInfo" :test="false" :cardSide="cardSide" :wordInfo="cardInfo"></wordcard>
+      <wordcard v-if="cardInfo" :test="false" :wordInfo="cardInfo"></wordcard>
     </div>
     <div v-if="index===20" class="bird-container">
       <div class="wrapper">
@@ -20,9 +20,6 @@
     <div :class="[{'fadein':task.length>0},'bottom-container']">
       <button @click="remove">
         <Icon icon="cross2"></Icon>
-      </button>
-      <button @click="reverse">
-        <Icon icon="reverse"></Icon>
       </button>
       <button @click="add">
         <Icon icon="add1"></Icon>
@@ -91,10 +88,14 @@ export default {
       this.down = false
       this.left = false
       this.right = false
+      wx.showLoading({
+        title: 'falling...'
+      })
       // this.enter = false
       const cardInfo = await this.$request(`${config.host}/word/oneWord?word=${this.task[newValue].vocabulary}`)
       this.cardInfo = cardInfo.word
       this.down = true
+      wx.hideLoading()
     }
   },
   computed: {
@@ -155,7 +156,7 @@ export default {
       setTimeout(() => {
         this.index++
         this.cardSide = true
-      }, 1000)
+      }, 600)
     },
     async add () {
       this.right = true
@@ -175,12 +176,12 @@ export default {
       setTimeout(() => {
         this.index++
         this.cardSide = true
-      }, 1000)
-    },
-    reverse () {
-      this.cardSide = !this.cardSide
+      }, 600)
     },
     async getTask () {
+      wx.showLoading({
+        title: '获取单词列表'
+      })
       const openId = await wx.getStorageSync('userInfo').openId
       const res = await this.$request(`${config.host}/word/getVocGroup?openId=${openId}`)
       console.log(res)
@@ -188,6 +189,7 @@ export default {
         this.bookId = res.bookId
       }
       this.task = res.data
+      wx.hideLoading()
     }
   },
   async mounted () {
@@ -250,7 +252,7 @@ export default {
   position: relative;
   left: 0;
   top: -800rpx;
-  transition: all 1s;
+  transition: all 0.9s;
   // animation: down 1s ease-in-out forwards;
 }
 // @-webkit-keyframes appear {

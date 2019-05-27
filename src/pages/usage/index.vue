@@ -103,6 +103,7 @@ export default {
           explain: 'International English Language Testing System'
         }
       ],
+      typeName: '',
       // 单词列表
       vocList: [],
       // 展示的单个单词信息
@@ -132,7 +133,7 @@ export default {
       return this.vocList.slice(0, this.vocListIndex * 10)
     },
     typeInfo () {
-      const typename = wx.getStorageSync('userInfo').selected
+      const typename = this.typeName
       return this.typeList.filter(t => {
         return t.title === typename
       })[0]
@@ -158,22 +159,32 @@ export default {
       this.showSent = !this.showSent
     },
     audioUk (pron) {
+      wx.showLoading({
+        title: '咳咳..'
+      })
       // 创建音频实例
       const audio = wx.createInnerAudioContext()
       audio.autoplay = true
       audio.src = pron.ph_en_mp3
       audio.onPlay(() => {
         // 播放时执行
+        wx.hideLoading()
       })
       audio.onError((res) => {
         this.$message.error(res)
       })
     },
     audioUs (pron) {
+      wx.showLoading({
+        title: '咳咳..'
+      })
       // 创建音频实例
       const audio = wx.createInnerAudioContext()
       audio.autoplay = true
       audio.src = pron.ph_am_mp3
+      audio.onPlay(() => {
+        wx.hideLoading()
+      })
       audio.onError((res) => {
         this.$message.error(res)
       })
@@ -183,18 +194,27 @@ export default {
     },
     // 获取单个单词的信息
     async showDetail (voc) {
+      wx.showLoading({
+        title: '获取单词信息ing'
+      })
       const res = await this.$request(`${config.host}/word/oneWord?word=${voc.vocInfo.vocabulary}`)
       console.log(res)
       this.vocDetail = res.word
+      wx.hideLoading()
+      wx.pageScrollTo({
+        scrollTop: 0,
+        duration: 500
+      })
     },
     async getVocrecords () {
       wx.showLoading({
-        title: '加载中'
+        title: '获取今日单词列表'
       })
       const openId = wx.getStorageSync('userInfo').openId
       const res = await this.$request(`${config.host}/word/getVocRecords?openId=${openId}`)
       wx.hideLoading()
       this.vocList = res.words
+      this.typeName = res.typeName
     }
   },
   mounted () {
@@ -207,6 +227,12 @@ export default {
       family: 'worksans',
       source: 'url("https://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
     })
+  },
+  onShow () {
+    this.getVocrecords()
+  },
+  onPullDownRefresh () {
+    this.getVocrecords()
   }
 }
 </script>
@@ -334,7 +360,7 @@ export default {
     }
   }
   .pre{
-    width: 100%;
+    width: 90%;
     padding: 30rpx;
     text-align: left;
     color: #706F74;

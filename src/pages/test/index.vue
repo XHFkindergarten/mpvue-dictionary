@@ -7,7 +7,7 @@
     <div v-if="task.length>0" :class="[{'fadein':task.length>0},'answer-tip']">
       Your answer:
     </div>
-    <div :class="[{'fadein':task.length>0},'input-container']">
+    <div :class="[{'fadein':task.length>0},{'down':down},'input-container']">
       <input v-model="inputAnswer" disable class="single-input" type="text" maxlength="-1">
     </div>
     <div v-if="toEnd||!hasTask" class="bird-container">
@@ -111,8 +111,12 @@ export default {
       this.inputAnswer = ''
       let cardInfo
       if (this.task[newValue].isFree === 1) {
+        wx.showLoading({
+          title: '卡片正在掉落...'
+        })
         cardInfo = await this.$request(`${config.host}/word/oneWord?word=${this.task[newValue].voc}`)
         this.cardInfo = cardInfo.word
+        wx.hideLoading()
       } else {
         this.cardInfo = this.task[newValue]
       }
@@ -151,8 +155,12 @@ export default {
       this.task = []
       this.cardInfo = ''
       const openId = await wx.getStorageSync('userInfo').openId
+      wx.showLoading({
+        title: '正在获取卡片流...'
+      })
       const res = await this.$request(`${config.host}/word/getMyTask?openId=${openId}`)
       this.task = res.cards
+      wx.hideLoading()
       if (!res || res.cards.length === 0) {
         this.hasTask = false
         return
@@ -318,9 +326,9 @@ export default {
 }
 .card-container{
   position: relative;
+  z-index: 50;
   left: 0;
   top: -800rpx;
-  z-index: -1;
   width: 80%;
   margin: 0 auto;
   transition: all 1s;
@@ -339,6 +347,8 @@ export default {
   // animation: slowup 1s ease-in-out forwards;
 }
 .input-container{
+  position: relative;
+  top: -800rpx;
   opacity: 0;
   width: 80%;
   margin: 0 auto;

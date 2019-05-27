@@ -15,18 +15,26 @@
       <div v-if="!isCreate" class="add-container" @click="addCard">
         <Icon icon="add"></Icon>自定义卡片
       </div>
+
+      <div v-if="isCreate" class="add-tip">卡片正面图片(图片非必传)</div>
       <div v-if="isCreate&&!realPath" @click="uploadImg" class="img-container">
         <Icon icon="add1"></Icon>
       </div>
       <div v-if="isCreate&&realPath" @click="uploadImg" class="img-preview">
-        <img class="preview" :src="realPath">
+        <image class="preview" :src="realPath" mode="widthFill"></image>
       </div>
-      <div v-if="isCreate" class="img-tip">为获得最佳显示效果,请尽量上传比例为3:2的横版图片</div>
       <div v-if="isCreate" class="add-tip">卡片正面文字
         <div class="font-num">{{frontWord.length}}/80</div>
       </div>
       <div v-if="isCreate" class="front">
         <textarea v-model="frontWord" class="front-input" cols="10" rows="3" maxlength="80"></textarea>
+      </div>
+      <div v-if="isCreate" class="add-tip">卡片背面图片</div>
+      <div v-if="isCreate&&!realPath2" @click="uploadImg2" class="img-container">
+        <Icon icon="add1"></Icon>
+      </div>
+      <div v-if="isCreate&&realPath2" @click="uploadImg2" class="img-preview">
+        <image class="preview" :src="realPath2" mode="widthFill"></image>
       </div>
       <div v-if="isCreate" class="add-tip">卡片背面文字
         <div class="font-num">{{backWord.length}}/80</div>
@@ -60,6 +68,7 @@ export default {
       tempPath: '',
       // 图片的七牛云地址
       realPath: '',
+      realPath2: '',
       // 卡片前面的文字
       frontWord: '',
       // 卡片背面文字
@@ -72,25 +81,38 @@ export default {
   computed: {
   },
   onShow () {
-    this.realPath = ''
+    // this.realPath = ''
+    // this.realPath2 = ''
     this.getNum()
+  },
+  watch: {
+    // isCreate (newValue, oldValue) {
+    //   if (newValue) {
+    //     this.realPath = ''
+    //     this.realPath2 = ''
+    //   }
+    // }
   },
   methods: {
     // 提交卡片
     async submitCard () {
-      if (!this.realPath || !this.frontWord || !this.backWord) {
+      if (!this.frontWord || !this.backWord) {
         this.$message.warning('请输入完整信息')
         return
       }
+      wx.showLoading({
+        title: '添加卡片中...'
+      })
       const openId = wx.getStorageSync('userInfo').openId
       const res = await this.$request(`${config.host}/word/addCard`, 'POST', {
         openId,
         isFree: 0,
         img: this.realPath,
+        img2: this.realPath2,
         freeFront: this.frontWord,
         freeBack: this.backWord
       })
-      console.log(res)
+      wx.hideLoading()
       if (res.success) {
         this.$message.success('添加卡片成功!')
         this.cancelCreate()
@@ -99,9 +121,10 @@ export default {
     // 取消创建
     cancelCreate () {
       this.isCreate = false
-      this.backWord = ''
-      this.frontWord = ''
-      this.realPath = ''
+      // this.backWord = ''
+      // this.frontWord = ''
+      // this.realPath = ''
+      // this.realPath2 = ''
     },
     // 获取七牛云临时token
     async getToken () {
@@ -109,12 +132,14 @@ export default {
       this.QiniuToken = res.token
     },
     // 图片上传到七牛云
-    uploadQiniu () {
+    uploadQiniu (num) {
       let that = this
       const key = new Date().getTime()
       wx.showLoading({
         title: '上传图片ing'
       })
+      console.log('upload qiniu', that.tempPath)
+      console.log('token', that.QiniuToken)
       wx.uploadFile({
         url: 'https://up-z2.qiniup.com',
         name: 'file',
@@ -127,10 +152,13 @@ export default {
           key
         },
         success: function (res) {
-          setTimeout(() => {
-            wx.hideLoading()
-          }, 1000)
-          that.realPath = `${config.imgHost}/${JSON.parse(res.data).key}`
+          that.tempPath = ''
+          wx.hideLoading()
+          if (num === 1) {
+            that.realPath = `${config.imgHost}/${JSON.parse(res.data).key}`
+          } else {
+            that.realPath2 = `${config.imgHost}/${JSON.parse(res.data).key}`
+          }
         }
       })
     },
@@ -138,12 +166,25 @@ export default {
     uploadImg () {
       let that = this
       wx.chooseImage({
-        count: 1,
+        count: 2,
         size: ['original'],
         sourceType: ['album', 'camera'],
         success (res) {
           that.tempPath = res.tempFilePaths[0]
-          that.uploadQiniu()
+          that.uploadQiniu(1)
+        }
+      })
+    },
+    // 上传图片
+    uploadImg2 () {
+      let that = this
+      wx.chooseImage({
+        count: 2,
+        size: ['original'],
+        sourceType: ['album', 'camera'],
+        success (res) {
+          that.tempPath = res.tempFilePaths[0]
+          that.uploadQiniu(2)
         }
       })
     },
@@ -193,6 +234,9 @@ export default {
     // }
   },
   mounted () {
+    wx.showShareMenu({
+      withShareTicket: true
+    })
     this.getNum()
     wx.loadFontFace({
       family: 'worksans',
@@ -243,7 +287,7 @@ export default {
   }
 }
 .max-height{
-  height:1400rpx !important;
+  height:1800rpx !important;
   justify-content: flex-start;
 } 
 .page-container{
@@ -271,6 +315,7 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+    margin: 20rpx 0;
   }
   .img-preview{
     width: 420rpx;
@@ -296,7 +341,7 @@ export default {
     text-align: left;
     .font-num{
       display: inline-block;
-      float: right;
+      // float: right;
       font-size: 28rpx;
       color: #64656a;
     }

@@ -1,7 +1,7 @@
 <template>
-  <div class="card-container">
+  <div class="card-container" @click="changeSide">
     <div class="pic-container">
-      <img class="pic" :src="wordInfo.img">
+      <image class="pic" :src="wordInfo.img" mode="aspectFill"></image>
     </div>
     <div class="content-container">
       <div class="frontword" v-if="cardSide">{{wordInfo.freeFront}}</div>
@@ -14,14 +14,19 @@ export default {
   data () {
     return {
       // 展示图片
-      picUrl: ''
+      picUrl: '',
+      // 卡片的正反面
+      cardSide: false
     }
   },
   props: [
-    'wordInfo',
-    'cardSide'
-
-  ]
+    'wordInfo'
+  ],
+  methods: {
+    changeSide () {
+      this.cardSide = !this.cardSide
+    }
+  }
 }
 </script>
 <style lang="less" scoped>
@@ -38,7 +43,7 @@ export default {
     .pic{
       min-height: 100%;
       width: 100%;
-      object-fit: cover;
+      // object-fit: scale-down;
     }
   }
   .content-container{
