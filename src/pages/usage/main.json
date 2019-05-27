@@ -1,5 +1,6 @@
 {
   "navigationBarTitleText": "Abandon",
   "navigationBarBackgroundColor": "#E6E5E3",
-  "backgroundColor": "#e6e5e3"
+  "backgroundColor": "#e6e5e3",
+  "enablePullDownRefresh": true
 }

@@ -1,7 +1,7 @@
 <template>
   <div class="page-container" :style="'background-image:url('+wallpaperUrl[index]+');'">
-    <div :class="['title-container',{'fade-in':fadein}]" :animation="fadeAnimation" :style="'color:'+titleColor[index]+';'">Abandon单词</div>
-    <div :class="['explain-container',{'fade-in':fadein}]" :style="'color:'+titleColor[index]+';'">fantastic tool for memorize</div>
+    <div :class="['title-container',{'fade-in':fadein}]" :animation="fadeAnimation" :style="'color:'+titleColor[index]+';'">Abandon</div>
+    <div :class="['explain-container',{'fade-in':fadein}]" :style="'color:'+titleColor[index]+';'">fantastic tool for memorizing</div>
     <div :class="['login-container',{'fade-in':fadein}]">
       <button class="button" open-type="getUserInfo" @getuserinfo="doLogin" :style="'background:'+buttonColor[index]+';color:'+beginColor[index]+';'">开始学习</button>
     </div>
@@ -9,13 +9,13 @@
 </template>
 
 <script>
-import store from '@/vuex/store'
+// import store from '@/vuex/store'
 import config from '@/config'
 export default {
   data () {
     return {
       wallpaperUrl: [
-        'https://img.xhfkindergarten.cn/wallpaper1',
+        'https://img.xhfkindergarten.cn/IMG_5362.jpg',
         'https://img.xhfkindergarten.cn/wallpaper2',
         'https://img.xhfkindergarten.cn/wallpaper3',
         'https://img.xhfkindergarten.cn/wallpape4',
@@ -65,36 +65,64 @@ export default {
     async doLogin (e) {
       let userInfo = wx.getStorageSync('userInfo')
       if (!userInfo) {
-        console.log('register')
-        // 获取登录参数
         userInfo = e.target.userInfo
-        // 获取登录码
-        const code = await this.login()
-        // 将用户信息发送至服务器，存储到用户表中
-        const openId = await this.$request(`${config.host}/register`, 'POST', {
-          ...userInfo,
-          code
-        })
-        console.log(openId)
-        // 存储本地
-        wx.setStorageSync('userInfo', {
-          ...userInfo,
-          openId: openId.openId
-        })
-        // 修改vuex
-        store.state.userinfo = {
-          ...userInfo,
-          openId: openId.openId
-        }
-        wx.navigateTo({
-          url: '/pages/select/main'
-        })
-      } else {
-        console.log('login success')
+      }
+      // 获取登录码
+      const code = await this.login()
+      // 发起注册
+      const res = await this.$request(`${config.host}/register`, 'POST', {
+        ...userInfo,
+        code
+      })
+      console.log(res)
+      if (res.hasRegister) {
+        // 已经注册过了
         wx.switchTab({
           url: '/pages/main/main'
         })
+      } else {
+        wx.setStorageSync('userInfo', {
+          ...userInfo,
+          openId: res.openId
+        })
+        this.$message.success('register!')
       }
+      // return
+      // if (!userInfo) {
+      //   console.log('register')
+      //   // 获取登录参数
+      //   userInfo = e.target.userInfo
+      //   wx.showLoading({
+      //     title: '正在注册'
+      //   })
+      //   // 获取登录码
+      //   const code = await this.login()
+      //   // 将用户信息发送至服务器，存储到用户表中
+      //   const openId = await this.$request(`${config.host}/register`, 'POST', {
+      //     ...userInfo,
+      //     code
+      //   })
+      //   console.log(openId)
+      //   // 存储本地
+      //   wx.setStorageSync('userInfo', {
+      //     ...userInfo,
+      //     openId: openId.openId
+      //   })
+      //   wx.hideLoading()
+      //   // // 修改vuex
+      //   // store.state.userinfo = {
+      //   //   ...userInfo,
+      //   //   openId: openId.openId
+      //   // }
+      //   wx.navigateTo({
+      //     url: '/pages/select/main'
+      //   })
+      // } else {
+      //   console.log('login success')
+      //   wx.switchTab({
+      //     url: '/pages/main/main'
+      //   })
+      // }
     },
     // wx.login方法
     login () {
@@ -155,7 +183,7 @@ export default {
 //   }
 // }
 div{
-  transition: opacity 1.5s;
+  transition: opacity 1s;
 }
 .page-container{
   position: fixed;

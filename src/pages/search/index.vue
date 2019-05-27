@@ -13,14 +13,11 @@
       <searchItem :word="word"></searchItem>
     </div>
     <div v-show="hasCard" :class="['card-container',{'down':down}]">
-      <wordcard :wordInfo="wordInfo" :cardSide="cardSide"></wordcard>
+      <wordcard :wordInfo="wordInfo"></wordcard>
     </div>
     <div :class="hasCard?'bottom-container hasCard':'noCard'">
       <button @click="removeCard">
         <Icon icon="crossb"></Icon>
-      </button>
-      <button @click="reverse">
-        <Icon icon="reverse"></Icon>
       </button>
       <button @click="addCard">
         <Icon icon="add"></Icon>
@@ -94,10 +91,6 @@ export default {
     // 不需要这张卡片
     removeCard () {
       this.wordInfo = ''
-    },
-    // 翻转卡片
-    reverse () {
-      this.cardSide = !this.cardSide
     },
     async comfirmInput () {
       await this.searchWord(this.searchText)

@@ -326,9 +326,9 @@ export default {
 }
 .card-container{
   position: relative;
+  z-index: 50;
   left: 0;
   top: -800rpx;
-  z-index: -1;
   width: 80%;
   margin: 0 auto;
   transition: all 1s;

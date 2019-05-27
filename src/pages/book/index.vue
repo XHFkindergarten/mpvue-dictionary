@@ -57,8 +57,15 @@ export default {
   methods: {
     // 确认
     async comfirm () {
+      if (this.selectedBooks.length === 0) {
+        this.$message.warning('选书啊崽种', 1000)
+        return
+      }
       const openId = wx.getStorageSync('userInfo').openId
       console.log(openId)
+      wx.showLoading({
+        title: '拿书ing...'
+      })
       const res = await this.$request(`${config.host}/word/addBook`, 'POST', {
         openId,
         bookList: this.selectedBooks,
@@ -66,8 +73,8 @@ export default {
       }).catch(err => {
         this.$message.error(err)
       })
-      console.log('select book', res)
       if (res.success) {
+        wx.hideLoading()
         this.$message.success('选择成功')
         // 更新信息， 主要是选择的类别信息放入localStorage
         wx.login({
@@ -96,6 +103,7 @@ export default {
     },
     // 返回
     backTo () {
+      this.selectedBooks = []
       wx.navigateBack({
         delta: 1
       })
@@ -111,14 +119,17 @@ export default {
       this.selectedBooks.push(options.id)
     },
     async getBookList () {
+      wx.showLoading({
+        title: '加载资料列表'
+      })
       // 获取图书列表
       const res = await this.$request(`${config.host}/word/getBookList?type=${this.typeInfo.title}`)
         .catch(err => {
           throw err
         })
-
       this.bookList = res.bookList
       this.formatBookList(this.bookList)
+      wx.hideLoading()
     },
     formatBookList (arr) {
       arr.forEach(item => {
@@ -136,6 +147,9 @@ export default {
       source: 'url("https://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
     })
     this.getBookList()
+  },
+  onShow () {
+    this.bookList = []
   }
 }
 </script>

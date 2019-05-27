@@ -1,8 +1,8 @@
 <template>
   <div :class="[{'background':toEnd||!hasTask}, 'page-container']" :style="'min-height:'+windowHeight+'px;'">
     <div :class="[{'down':down},{'left':left},{'right':right},'card-container']">
-      <wordcard v-if="cardInfo&&task[index].isFree==1" :test="false" :cardSide="!next" :wordInfo="cardInfo"></wordcard>
-      <freecard v-if="cardInfo&&task[index].isFree==0" :cardSide="!next" :wordInfo="cardInfo"></freecard>
+      <wordcard v-if="cardInfo&&task[index].isFree==1" :test="false" :wordInfo="cardInfo"></wordcard>
+      <freecard v-if="cardInfo&&task[index].isFree==0" :wordInfo="cardInfo"></freecard>
     </div>
     <div v-if="toEnd || !hasTask" class="bird-container">
       <div class="wrapper">
@@ -13,19 +13,25 @@
         <button @click="backTo" class="back">返回</button>
       </div>
     </div>
-    <div :class="[{fadein:task.length>0}, 'bottom-container']">
-      <button v-show="!next" @click="no">
+    <div :class="[{fadein:!toEnd&&task.length>0}, 'bottom-container']">
+      <button @click="nextCard(0)">
         <Icon icon="sad"></Icon>
+        <div class="text">{{timeGapList[timeGap]}}</div>
       </button>
-      <button v-show="!next" @click="yes">
+      <button v-if="timeGap+1<timeGapList.length" @click="nextCard(1)">
         <Icon icon="Happy"></Icon>
+        <div class="text">{{timeGapList[timeGap+1]}}</div>
       </button>
-      <button @click="setTime" v-show="next">
+      <button v-if="timeGap+2<timeGapList.length" @click="nextCard(2)">
+        <Icon icon="sohappy"></Icon>
+        <div class="text">{{timeGapList[timeGap+2]}}</div>
+      </button>
+      <!-- <button @click="setTime" v-show="next">
         <Icon size='mid-lar' icon="time"></Icon>
       </button>
       <button @click="nextCard" v-show="next">
         <Icon size='mid-lar' icon="array"></Icon>
-      </button>
+      </button> -->
     </div>
   </div>
 </template>
@@ -44,8 +50,9 @@ export default {
       index: '',
       // 当前显示卡片的哪一面
       cardSide: false,
-      // 是否可以进入下一卡片
-      next: false,
+      // // 是否可以进入下一卡片
+      // next: false,
+      // timeGap的意思就是当前经过了这个时间段才加入队列
       timeGap: 0,
       timeGapList: [
         '5分钟',
@@ -94,14 +101,11 @@ export default {
       this.cardInfo = ''
       this.down = false
       this.right = false
-      // this.enter = true
-      // setTimeout(() => {
-      //   this.enter = false
-      // }, 1100)
       let cardInfo
+      // isFree=1说明是单词卡片
       if (this.task[newValue].isFree === 1) {
         wx.showLoading({
-          title: '卡片正在掉落...'
+          title: 'falling...'
         })
         cardInfo = await this.$request(`${config.host}/word/oneWord?word=${this.task[newValue].voc}`)
         this.cardInfo = cardInfo.word
@@ -145,52 +149,36 @@ export default {
       }
       this.index = 0
     },
-    // 设置提醒时间
-    setTime () {
-      const self = this
-      wx.showActionSheet({
-        itemList: this.showTimeGapList,
-        success (res) {
-          console.log('index', res.tapIndex)
-          console.log(self.timeGap)
-          self.timeGap += res.tapIndex
-          console.log('timeGap', self.timeGap)
-        }
-      })
-    },
-    // 下一张卡片
-    async nextCard () {
+    // // 设置提醒时间
+    // setTime () {
+    //   const self = this
+    //   wx.showActionSheet({
+    //     itemList: this.showTimeGapList,
+    //     success (res) {
+    //       console.log('index', res.tapIndex)
+    //       console.log(self.timeGap)
+    //       self.timeGap += res.tapIndex
+    //       console.log('timeGap', self.timeGap)
+    //     }
+    //   })
+    // },
+
+    // 提交卡片
+    async nextCard (gap) {
+      wx.vibrateShort()
+      // 启动左移动画
       this.right = true
       setTimeout(() => {
         this.right = false
         this.index++
-      }, 1000)
-      console.log(this.index, this.task.length)
-      if (this.index === this.task.length) {
-        // TODO
-        console.log('Cards out')
-      } else {
-        console.log('更新', this.timeGap)
-        const res = await this.$request(`${config.host}/word/updateTimeGap`, 'POST', {
-          id: this.task[this.index].id,
-          timeGap: this.timeGap
-        })
-        console.log(res)
-      }
-    },
-    // 记不住这个单词
-    no () {
-      this.next = true
-      this.cardSide = false
-    },
-    yes () {
-      // 记录这个单词
-      this.next = true
-      this.cardSide = false
-      this.timeGap++
-    },
-    reverse () {
-      this.cardSide = !this.cardSide
+      }, 600)
+      console.log(`提交第${this.index + 1}张卡片,总共${this.task.length}张`)
+      const res = await this.$request(`${config.host}/word/updateTimeGap`, 'POST', {
+        id: this.task[this.index].id,
+        timeGap: this.timeGap + gap
+      })
+      console.log(`当前gap${this.timeGap}, 提交gap${this.timeGap + gap}`)
+      console.log(res)
     }
   },
   async mounted () {
@@ -294,7 +282,7 @@ export default {
   width: 80%;
   margin: 0 auto;
   position: relative;
-  transition: all 1s;
+  transition: all 0.6s;
   left: 0;
   top: -800rpx;
   // animation: down 1s ease-in-out forwards;
@@ -303,7 +291,7 @@ export default {
   z-index: 51;
   transition: opacity 1s;
   opacity: 0;
-  height: 140rpx;
+  height: 160rpx;
   display: flex;
   justify-content: space-around;
   border-top-left-radius: 40rpx;
@@ -317,7 +305,14 @@ export default {
     height: 100%;
     background: #F6F6F6;
     display: flex;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
+  }
+  .text{
+    height:14px;
+    font-size: 14px;
+    color: #707070;
   }
 }
 // .hasCard{

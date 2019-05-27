@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <div :class="[{'down':down},{'left':left},{'right':right},'card-container']">
-      <wordcard v-if="cardInfo" :test="false" :cardSide="cardSide" :wordInfo="cardInfo"></wordcard>
+      <wordcard v-if="cardInfo" :test="false" :wordInfo="cardInfo"></wordcard>
     </div>
     <div v-if="index===20" class="bird-container">
       <div class="wrapper">
@@ -20,9 +20,6 @@
     <div :class="[{'fadein':task.length>0},'bottom-container']">
       <button @click="remove">
         <Icon icon="cross2"></Icon>
-      </button>
-      <button @click="reverse">
-        <Icon icon="reverse"></Icon>
       </button>
       <button @click="add">
         <Icon icon="add1"></Icon>
@@ -92,7 +89,7 @@ export default {
       this.left = false
       this.right = false
       wx.showLoading({
-        title: '单词正在掉落...'
+        title: 'falling...'
       })
       // this.enter = false
       const cardInfo = await this.$request(`${config.host}/word/oneWord?word=${this.task[newValue].vocabulary}`)
@@ -180,9 +177,6 @@ export default {
         this.index++
         this.cardSide = true
       }, 600)
-    },
-    reverse () {
-      this.cardSide = !this.cardSide
     },
     async getTask () {
       wx.showLoading({

@@ -117,6 +117,7 @@ export default {
     },
     // 确认
     async comfirm () {
+      console.log(this.selectedCard)
       if (!this.selectedCard) {
         this.$message.warning('请选择学习类别:)')
       } else if (this.selectedCard.title === 'WDNMD') {
@@ -144,6 +145,7 @@ export default {
           url: '/pages/main/main'
         })
       } else {
+        console.log('go')
         wx.navigateTo({
           url: `/pages/book/main?title=${this.selectedCard.title}&type=${this.selectedCard.type}&explain=${this.selectedCard.explain}`
         })

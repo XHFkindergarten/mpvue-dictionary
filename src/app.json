@@ -1,13 +1,13 @@
 {
   "pages": [
-    "pages/me/main",
     "pages/main/main",
+    "pages/vocGroup/main",
+    "pages/hello/main",
+    "pages/remember/main",
     "pages/myCard/main",
+    "pages/me/main",
     "pages/search/main",
     "pages/test/main",
-    "pages/hello/main",
-    "pages/vocGroup/main",
-    "pages/remember/main",
     "pages/usage/main",
     "pages/select/main",
     "pages/book/main"
