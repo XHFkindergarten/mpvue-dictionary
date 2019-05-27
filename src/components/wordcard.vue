@@ -1,17 +1,12 @@
 <template>
   <div class="card-container" @click="changeSide">
-    <div class="pic-container">
+    <!-- <div class="pic-container">
       <image class="pic" :src="wordInfo.labelImg" mode="widthFill"></image>
-    </div>
+    </div> -->
+    <div class="word-name">{{wordInfo.word_name}}</div>
+
     <div :class="cardSide?'content-container':'content-container max-height'">
-      <div v-if="(test&&!cardSide)||!test" class="word-name">{{wordInfo.word_name}}</div>
-      <div v-else class="word-name2">
-        <span v-for="pron in wordInfo.symbols" :key="pron.ph_en">
-          <span v-for="(part,_index) in pron.parts" :key="_index">
-            {{part.part}} {{part.means}}
-          </span>
-        </span>
-      </div>
+      
       <div v-if="!cardSide">
         <div class="pron" v-for="pron in wordInfo.symbols" :key="pron.ph_en">
           <div @click.stop="audioUk(pron)" class="uk">英 {{pron.ph_en}}<img v-if="pron.ph_en_mp3" src="/static/icon/sound.png"></div>
@@ -58,8 +53,7 @@ export default {
     }
   },
   props: [
-    'wordInfo',
-    'test'
+    'wordInfo'
   ],
   components: {
     Icon
@@ -157,18 +151,33 @@ export default {
   width: 100%;
   border-radius: 60rpx;
   overflow: hidden;
-  .pic-container{
-    overflow: hidden;
-    height: 400rpx;
-    width: 100%;
-    .pic{
-      width: 100%;
-      min-height: 100%;
-      object-fit: cover;
-    }
+  // .pic-container{
+  //   overflow: hidden;
+  //   height: 400rpx;
+  //   width: 100%;
+  //   .pic{
+  //     width: 100%;
+  //     min-height: 100%;
+  //     object-fit: cover;
+  //   }
+  // }
+  .word-name{
+    width: 90%;
+    font-family: 'nolan';
+    font-size: 60rpx;
+    padding: 60rpx 30rpx 30rpx;
+    background: #F6F6F6;
+    margin-bottom: 6rpx;
+  }
+  .word-name2{
+    width: 90%;
+    font-size: 40rpx;
+    margin-bottom: 6rpx;
+    padding: 60rpx 30rpx 30rpx;
+    background: #F6F6F6;
   }
   .content-container{
-    width: 90%;
+    // width: 90%;
     overflow: hidden;
     max-height: 100rpx;
     transition: max-height 1s;
@@ -177,17 +186,6 @@ export default {
     background: #F6F6F6;
     width: 100%;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-    .word-name{
-      width: 90%;
-      font-family: 'nolan';
-      font-size: 40rpx;
-      margin-bottom: 10rpx;
-    }
-    .word-name2{
-      width: 90%;
-      font-size: 28rpx;
-      margin-bottom: 10rpx;
-    }
     .word-mean{
       width: 90%;
       font-family: 'nolan';
@@ -216,7 +214,9 @@ export default {
       .en{
         margin: 10rpx 0 40rpx;
         font-weight: bolder;
-        font-family: 'English';
+        // font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        // font-family: 'Times New Roman', Times, serif;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
         font-size: 28rpx;
         color: #8A8A8A;
       }

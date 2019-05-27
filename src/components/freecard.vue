@@ -1,7 +1,7 @@
 <template>
   <div class="card-container" @click="changeSide">
-    <div class="pic-container">
-      <image class="pic" :src="wordInfo.img" mode="aspectFill"></image>
+    <div v-if="pics.length>0" class="pic-container" @click.stop="previewPic">
+      <image class="pic" :src="cardSide?pics[0]:pics[1]" mode="aspectFit"></image>
     </div>
     <div class="content-container">
       <div class="frontword" v-if="cardSide">{{wordInfo.freeFront}}</div>
@@ -16,13 +16,33 @@ export default {
       // 展示图片
       picUrl: '',
       // 卡片的正反面
-      cardSide: false
+      cardSide: true
+    }
+  },
+  computed: {
+    pics () {
+      if (!this.wordInfo.img) {
+        return []
+      }
+      if (!this.wordInfo.img2) {
+        this.wordInfo.img2 = this.wordInfo.img
+      }
+      return [
+        this.wordInfo.img,
+        this.wordInfo.img2
+      ]
     }
   },
   props: [
     'wordInfo'
   ],
   methods: {
+    previewPic () {
+      wx.previewImage({
+        current: this.cardSide ? this.pics[0] : this.pics[1],
+        urls: this.pics
+      })
+    },
     changeSide () {
       this.cardSide = !this.cardSide
     }
@@ -37,8 +57,9 @@ export default {
   border-radius: 60rpx;
   overflow: hidden;
   .pic-container{
+    background: #F6F6F6;
     overflow: hidden;
-    height: 400rpx;
+    // height: 400rpx;
     width: 100%;
     .pic{
       min-height: 100%;

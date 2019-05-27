@@ -1,7 +1,7 @@
 <template>
   <div class="page-container">
     <div :class="[{'down':down},{'left':left},{'right':right},'card-container']">
-      <wordcard v-if="cardInfo" :test="false" :wordInfo="cardInfo"></wordcard>
+      <wordcard v-if="cardInfo" :wordInfo="cardInfo"></wordcard>
     </div>
     <div v-if="index===20" class="bird-container">
       <div class="wrapper">
