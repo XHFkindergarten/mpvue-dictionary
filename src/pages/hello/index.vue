@@ -93,6 +93,7 @@ export default {
         wx.switchTab({
           url: '/pages/main/main'
         })
+        this.$message.success('register!')
       }
       // return
       // if (!userInfo) {

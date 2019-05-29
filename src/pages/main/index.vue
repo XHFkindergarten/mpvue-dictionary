@@ -713,7 +713,7 @@ export default {
     uploadImg (num = 1) {
       let that = this
       wx.chooseImage({
-        count: 1,
+        count: 2,
         size: ['original'],
         sourceType: ['album', 'camera'],
         success (res) {
@@ -899,7 +899,7 @@ export default {
     
     .font-num{
       display: inline-block;
-      float: right;
+      // float: right;
       font-size: 28rpx;
       color: #64656a;
     }
