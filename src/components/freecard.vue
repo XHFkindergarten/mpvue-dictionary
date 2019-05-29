@@ -1,7 +1,11 @@
 <template>
   <div class="card-container" @click="changeSide">
-    <div v-if="pics.length>0" class="pic-container" @click.stop="previewPic">
-      <image class="pic" :src="cardSide?pics[0]:pics[1]" mode="aspectFit"></image>
+    <div v-if="(cardSide&&wordInfo.rec1)||(!cardSide&&wordInfo.rec2)" @click.stop="readRec" class="rec-container">
+      <Icon icon="start" size="mid"></Icon>
+    </div>
+    <div class="title">{{wordInfo.title}}</div>
+    <div v-if="currentPic" class="pic-container" @click.stop="previewPic">
+      <image class="pic" :src="currentPic" mode="aspectFit"></image>
     </div>
     <div class="content-container">
       <div class="frontword" v-if="cardSide">{{wordInfo.freeFront}}</div>
@@ -10,6 +14,7 @@
   </div>
 </template>
 <script>
+import Icon from '@/components/Icon'
 export default {
   data () {
     return {
@@ -19,45 +24,98 @@ export default {
       cardSide: true
     }
   },
+  components: {
+    Icon
+  },
   computed: {
+    // 用于预览的图片数组
     pics () {
-      if (!this.wordInfo.img) {
-        return []
+      const arr = []
+      if (this.wordInfo.img) {
+        arr.push(this.wordInfo.img)
       }
-      if (!this.wordInfo.img2) {
-        this.wordInfo.img2 = this.wordInfo.img
+      if (this.wordInfo.img2) {
+        arr.push(this.wordInfo.img2)
       }
-      return [
-        this.wordInfo.img,
-        this.wordInfo.img2
-      ]
+      return arr
+    },
+    // 当前卡片页是否有图片
+    currentPic () {
+      if (this.cardSide && this.wordInfo.img) {
+        return this.wordInfo.img
+      } else if (!this.cardSide && this.wordInfo.img2) {
+        return this.wordInfo.img2
+      } else {
+        return ''
+      }
     }
   },
   props: [
     'wordInfo'
   ],
   methods: {
+    // 播放录音
+    readRec () {
+      // 发出震动
+      wx.vibrateShort({
+        success: () => {
+          console.log('震动')
+        }
+      })
+      // 创建音频实例
+      const audio = wx.createInnerAudioContext()
+      audio.autoplay = true
+      audio.src = this.cardSide ? this.wordInfo.rec1 : this.wordInfo.rec2
+      audio.onPlay(() => {
+        wx.hideLoading()
+        // 播放时执行
+        console.log('播放suc1')
+      })
+      audio.onError((res) => {
+        wx.hideLoading()
+        this.$message.error(res)
+      })
+    },
     previewPic () {
+      this.$store.previewImg = true
       wx.previewImage({
-        current: this.cardSide ? this.pics[0] : this.pics[1],
+        current: this.currentPic,
         urls: this.pics
       })
     },
     changeSide () {
       this.cardSide = !this.cardSide
     }
+  },
+  mounted () {
+    this.$store.previewImg = false
   }
 }
 </script>
 <style lang="less" scoped>
+.title{
+  width: 90%;
+  padding-left: 30rpx;
+  margin-bottom: 30rpx;
+  font-size: 40rpx;
+  font-weight: bold;
+}
 .card-container{
+  padding-bottom: 60rpx;
+  padding-top: 110rpx;
+  background: #F6F6F6;
   margin-top: 30rpx;
   height: auto;
   width: 100%;
   border-radius: 60rpx;
   overflow: hidden;
+  position:relative;
+  .rec-container{
+    position: absolute;
+    top: 30rpx;
+    right: 60rpx;
+  }
   .pic-container{
-    background: #F6F6F6;
     overflow: hidden;
     // height: 400rpx;
     width: 100%;
@@ -76,13 +134,13 @@ export default {
     .frontword{
       width: 90%;
       margin: 10rpx 0;
-      color: #8A8A8A;
+      color: #000;
       word-wrap: break-word;
     }
     .backword{
       width: 90%;
       margin: 10rpx 0;
-      color: #8A8A8A;
+      color: #000;
       word-wrap: break-word;
     }
   }

@@ -2,9 +2,9 @@
   <div class="page-container">
     <div class="title">
       <span style="color:#413E49">Concent</span><span style="color:#cbcac8">rate on</span>
-      <div class="comfirm-container">
+      <!-- <div class="comfirm-container">
         <button @click="comfirm" class="comfirm">GKD</button>
-      </div>
+      </div> -->
     </div>
     <div class="card-container">
       <div class="half-container">
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import config from '@/config'
+// import config from '@/config'
 import Card from '@/components/card'
 export default {
   data () {
@@ -61,12 +61,6 @@ export default {
       ],
       rightCardList: [
         {
-          title: 'WDNMD',
-          type: '不选了，随便背了，有什么好说哒',
-          explain: 'Give me some words whatever it is',
-          selected: false
-        },
-        {
           title: 'CET6',
           type: '大学英语六级',
           explain: 'Collage Englist Test Band6',
@@ -98,6 +92,7 @@ export default {
     select (option) {
       this.selectedCard = option
       this.formatList()
+      this.comfirm()
     },
     formatList () {
       this.leftCardList.forEach(item => {
@@ -117,39 +112,11 @@ export default {
     },
     // 确认
     async comfirm () {
-      console.log(this.selectedCard)
-      if (!this.selectedCard) {
-        this.$message.warning('请选择学习类别:)')
-      } else if (this.selectedCard.title === 'WDNMD') {
-        wx.login({
-          success (res) {
-            wx.request({
-              url: `${config.host}/login`,
-              method: 'POST',
-              data: {
-                code: res.code
-              },
-              success (res) {
-                if (res.data.success) {
-                  wx.setStorageSync('userInfo', res.data.userInfo)
-                }
-              }
-            })
-          }
-        })
-        const openId = wx.getStorageSync('userInfo').openId
-        const res = await this.$request(`${config.host}/wdnmd?openId=${openId}`)
-        console.log(res.userInfo)
-        wx.setStorageSync('userInfo', res.userInfo)
-        wx.reLaunch({
-          url: '/pages/main/main'
-        })
-      } else {
-        console.log('go')
-        wx.navigateTo({
-          url: `/pages/book/main?title=${this.selectedCard.title}&type=${this.selectedCard.type}&explain=${this.selectedCard.explain}`
-        })
-      }
+      console.log('go')
+      this.$store.route = 'book'
+      wx.navigateTo({
+        url: `/pages/book/main?title=${this.selectedCard.title}&type=${this.selectedCard.type}&explain=${this.selectedCard.explain}`
+      })
     }
   },
   mounted () {

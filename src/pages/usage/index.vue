@@ -83,11 +83,6 @@ export default {
           explain: 'The Test of English as a Foreign Language'
         },
         {
-          title: 'WDNMD',
-          type: '不选了，随便背了，有什么好说哒',
-          explain: 'Give me some words whatever it is'
-        },
-        {
           title: 'CET6',
           type: '大学英语六级',
           explain: 'Collage Englist Test Band6'
@@ -101,6 +96,10 @@ export default {
           title: 'IELTS',
           type: '雅思',
           explain: 'International English Language Testing System'
+        }, {
+          title: 'Null',
+          type: '请选择单词参考书',
+          explain: 'Plz choose ur book'
         }
       ],
       typeName: '',
@@ -149,7 +148,14 @@ export default {
   methods: {
     // 开始学习
     startLearning () {
+      if (this.typeName === 'Null') {
+        this.$store.route = 'select'
+        wx.navigateTo({
+          url: '/pages/select/main'
+        })
+      }
       if (!this.vocDetail) {
+        this.$store.route = 'vocGroup'
         wx.navigateTo({
           url: '/pages/vocGroup/main'
         })
@@ -212,6 +218,7 @@ export default {
       })
       const openId = wx.getStorageSync('userInfo').openId
       const res = await this.$request(`${config.host}/word/getVocRecords?openId=${openId}`)
+      console.log(res)
       wx.hideLoading()
       this.vocList = res.words
       this.typeName = res.typeName

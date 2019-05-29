@@ -1,11 +1,12 @@
 {
   "pages": [
     "pages/main/main",
-    "pages/vocGroup/main",
     "pages/hello/main",
-    "pages/remember/main",
-    "pages/myCard/main",
     "pages/me/main",
+    "pages/myCard/main",
+    "pages/editcard/main",
+    "pages/remember/main",
+    "pages/vocGroup/main",
     "pages/search/main",
     "pages/test/main",
     "pages/usage/main",
@@ -25,8 +26,8 @@
     "borderStyle": "white",
     "list": [{
       "pagePath": "pages/main/main",
-      "iconPath": "static/tabs/home.png",
-      "selectedIconPath": "static/tabs/home-active.png",
+      "iconPath": "static/tabs/cards.png",
+      "selectedIconPath": "static/tabs/cards-black.png",
       "text": "cards"
     }, {
       "pagePath": "pages/usage/main",

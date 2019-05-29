@@ -95,6 +95,7 @@ export default {
           }
         })
         setTimeout(() => {
+          this.$store.route = 'main'
           wx.switchTab({
             url: '/pages/main/main'
           })

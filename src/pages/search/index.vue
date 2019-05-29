@@ -79,6 +79,7 @@ export default {
     },
     // 返回
     backTo () {
+      this.$store.route = 'main'
       wx.switchTab({
         url: '/pages/main/main'
       })

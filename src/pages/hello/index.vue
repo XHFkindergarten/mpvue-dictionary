@@ -1,6 +1,6 @@
 <template>
   <div class="page-container" :style="'background-image:url('+wallpaperUrl[index]+');'">
-    <div :class="['title-container',{'fade-in':fadein}]" :animation="fadeAnimation" :style="'color:'+titleColor[index]+';'">Abandon</div>
+    <div :class="['title-container',{'fade-in':fadein}]" :style="'color:'+titleColor[index]+';'">Abandon</div>
     <div :class="['explain-container',{'fade-in':fadein}]" :style="'color:'+titleColor[index]+';'">fantastic tool for memorizing</div>
     <div :class="['login-container',{'fade-in':fadein}]">
       <button class="button" open-type="getUserInfo" @getuserinfo="doLogin" :style="'background:'+buttonColor[index]+';color:'+beginColor[index]+';'">开始学习</button>
@@ -70,12 +70,15 @@ export default {
       // 获取登录码
       const code = await this.login()
       // 发起注册
+      wx.showLoading('注册中...')
       const res = await this.$request(`${config.host}/register`, 'POST', {
         ...userInfo,
         code
       })
+      wx.hideLoading()
       console.log(res)
       if (res.hasRegister) {
+        this.$store.route = 'main'
         // 已经注册过了
         wx.switchTab({
           url: '/pages/main/main'
@@ -86,6 +89,10 @@ export default {
           openId: res.openId
         })
         this.$message.success('register!')
+        this.$store.route = 'main'
+        wx.switchTab({
+          url: '/pages/main/main'
+        })
       }
       // return
       // if (!userInfo) {
@@ -136,17 +143,17 @@ export default {
           }
         })
       })
-    },
-    fadein () {
-      // 调用微信小程序动画接口
-      const animation = wx.createAnimation({
-        duration: 1000,
-        timingFunction: 'ease-in-out'
-      })
-      // animation.opacity(0).step({duration: 0}).step()
-      animation.opacity(1).step()
-      this.fadeAnimation = animation
     }
+    // fadein () {
+    //   // 调用微信小程序动画接口
+    //   const animation = wx.createAnimation({
+    //     duration: 1000,
+    //     timingFunction: 'ease-in-out'
+    //   })
+    //   // animation.opacity(0).step({duration: 0}).step()
+    //   animation.opacity(1).step()
+    //   this.fadeAnimation = animation
+    // }
   },
   mounted () {
     wx.loadFontFace({

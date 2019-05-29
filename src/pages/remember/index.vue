@@ -124,6 +124,7 @@ export default {
   methods: {
     // 返回
     backTo () {
+      this.$store.route = 'main'
       wx.switchTab({
         url: '/pages/main/main'
       })
@@ -282,7 +283,7 @@ export default {
   width: 80%;
   margin: 0 auto;
   position: relative;
-  transition: all 0.6s;
+  transition: all 0.2s;
   left: 0;
   top: -800rpx;
   // animation: down 1s ease-in-out forwards;

@@ -15,83 +15,187 @@
       <div v-if="!isCreate" class="add-container" @click="addCard">
         <Icon icon="add"></Icon>自定义卡片
       </div>
-
-      <div v-if="isCreate" class="add-tip">卡片正面媒体</div>
-      <div v-if="isCreate" class="media-container">
-        <div @click="beginRecord">
-          <Icon icon="mic"></Icon>
+      <div v-if="isCreate" class="choose-container">
+        <button @click="toCommon" :class="['left-btn',{'choose-type':commonType}]">常规</button>
+        <button @click="toQues" :class="['right-btn',{'choose-type':!commonType}]">问答</button>
+      </div>
+      <div v-if="isCreate&&commonType" class="common-card">
+        <div class="add-tip">标题</div>
+        <div class="title-container">
+          <input type="text" v-model="title">
         </div>
-        <div @click="uploadImg">
-          <Icon icon="image"></Icon>
+        <div class="add-tip">正面媒体</div>
+        <div class="media-container">
+          <div @click="beginRecord(1)">
+            <Icon icon="mic"></Icon>
+          </div>
+          <div @click="uploadImg(1)">
+            <Icon icon="image"></Icon>
+          </div>
+        </div>
+        <div v-if="isRecording" class="record-tip">
+          <button @click="stopRecord(1)">
+            <Icon icon="dot-red" size="mid"></Icon>
+          </button>
+          <button @click="toggleRecord">
+            <Icon :icon="pauseRecord?'start-white':'pause'" size="mid"></Icon>
+          </button>
+          <button @click="cancelRecord(1)">
+            <Icon icon="cross" size="mid"></Icon>
+          </button>
+        </div>
+        <div v-if="realRecordPath" :class="['existRecord',{'red-bg':isReadingRec1}]" @click="readAudio1">
+          录音1 长度:{{recordDuration1}}
+          <div @click.stop="deleteRecord(1)" style="display:flex;justify-content:center;">
+            <Icon icon="cross-white" size="mini"></Icon>
+          </div>
+        </div>
+        <div v-if="isCreate&&realPath" class="img-preview">
+          <div @click="removeImg(1)" class="removeimg">
+            <Icon icon="cross-white" size="mini"></Icon>
+          </div>
+          <image class="preview" :src="realPath" mode="aspectFill"></image>
+        </div>
+        <div class="add-tip">正面文字
+          <div class="font-num">{{frontWord.length}}/80</div>
+        </div>
+        <div class="front">
+          <textarea v-model="frontWord" class="front-input" cols="10" rows="3" maxlength="80"></textarea>
+        </div>
+        <div class="add-tip">背面媒体</div>
+        <!-- <div v-if="isCreate&&!realPath2" @click="uploadImg2" class="img-container">
+          <Icon icon="add1"></Icon>
+        </div> -->
+        <div class="media-container">
+          <div @click="beginRecord(2)">
+            <Icon icon="mic"></Icon>
+          </div>
+          <div @click="uploadImg(2)">
+            <Icon icon="image"></Icon>
+          </div>
+        </div>
+        <div v-if="isRecording2" class="record-tip">
+          <button @click="stopRecord(2)">
+            <Icon icon="dot-red" size="mid"></Icon>
+          </button>
+          <button @click="toggleRecord">
+            <Icon :icon="pauseRecord?'start-white':'pause'" size="mid"></Icon>
+          </button>
+          <button @click="cancelRecord(2)">
+            <Icon icon="cross" size="mid"></Icon>
+          </button>
+        </div>
+        <div v-if="realRecordPath2" :class="['existRecord',{'red-bg':isReadingRec2}]" @click="readAudio2">
+          录音2 长度:{{recordDuration2}}
+          <div @click.stop="deleteRecord(2)" style="display:flex;justify-content:center;">
+            <Icon icon="cross-white" size="mini"></Icon>
+          </div>
+        </div>
+        <div v-if="isCreate&&realPath2" class="img-preview">
+          <div @click="removeImg(2)" class="removeimg">
+            <Icon icon="cross-white" size="mini"></Icon>
+          </div>
+          <image class="preview" :src="realPath2" mode="aspectFill"></image>
+        </div>
+        <div class="add-tip">背面文字
+          <div class="font-num">{{backWord.length}}/80</div>
+        </div>
+        <div class="front">
+          <textarea v-model="backWord" class="front-input" cols="10" rows="3" maxlength="80"></textarea>
+        </div>
+        <div @click="submitCard" class="submit-container">
+          <button class="submit">create</button>
         </div>
       </div>
-      <div v-if="isRecording" class="record-tip">
-        <button @click="stopRecord">
-          <Icon icon="dot-red" size="mid"></Icon>
-        </button>
-        <button @click="toggleRecord">
-          <Icon :icon="pauseRecord?'start':'pause'" size="mid"></Icon>
-        </button>
-        <button @click="cancelRecord">
-          <Icon icon="cross" size="mid"></Icon>
-        </button>
-      </div>
-      <div v-if="realRecordPath" class="existRecord">
-        录音1 长度:{{recordDuration1}}
-        <div @click="deleteRecord(1)" style="display:flex;justify-content:center;">
-          <Icon icon="cross-white" size="mini"></Icon>
+      <div v-if="isCreate&&!commonType" class="common-card">
+        <div class="add-tip">标题</div>
+        <div class="title-container">
+          <input type="text" v-model="title2">
+        </div>
+        <div class="add-tip">问题媒体</div>
+        <div class="media-container">
+          <div @click="beginRecord(3)">
+            <Icon icon="mic"></Icon>
+          </div>
+          <div @click="uploadImg(3)">
+            <Icon icon="image"></Icon>
+          </div>
+        </div>
+        <div v-if="isRecording3" class="record-tip">
+          <button @click="stopRecord(3)">
+            <Icon icon="dot-red" size="mid"></Icon>
+          </button>
+          <button @click="toggleRecord">
+            <Icon :icon="pauseRecord?'start-white':'pause'" size="mid"></Icon>
+          </button>
+          <button @click="cancelRecord(3)">
+            <Icon icon="cross" size="mid"></Icon>
+          </button>
+        </div>
+        <div v-if="realRecordPath3" :class="['existRecord',{'red-bg':isReadingRec3}]" @click="readAudio3">
+          录音1 长度:{{recordDuration3}}
+          <div @click.stop="deleteRecord(3)" style="display:flex;justify-content:center;">
+            <Icon icon="cross-white" size="mini"></Icon>
+          </div>
+        </div>
+        <div v-if="isCreate&&realPath3" class="img-preview">
+          <div @click="removeImg(3)" class="removeimg">
+            <Icon icon="cross-white" size="mini"></Icon>
+          </div>
+          <image class="preview" :src="realPath3" mode="aspectFill"></image>
+        </div>
+        <div class="add-tip">描述问题
+          <div class="font-num">{{question.length}}/80</div>
+        </div>
+        <div class="front">
+          <textarea v-model="question" class="front-input" cols="10" rows="3" maxlength="80"></textarea>
+        </div>
+        <div class="add-tip">答案媒体</div>
+        <!-- <div v-if="isCreate&&!realPath2" @click="uploadImg2" class="img-container">
+          <Icon icon="add1"></Icon>
+        </div> -->
+        <div class="media-container">
+          <div @click="beginRecord(4)">
+            <Icon icon="mic"></Icon>
+          </div>
+          <div @click="uploadImg(4)">
+            <Icon icon="image"></Icon>
+          </div>
+        </div>
+        <div v-if="isRecording4" class="record-tip">
+          <button @click="stopRecord(4)">
+            <Icon icon="dot-red" size="mid"></Icon>
+          </button>
+          <button @click="toggleRecord">
+            <Icon :icon="pauseRecord?'start-white':'pause'" size="mid"></Icon>
+          </button>
+          <button @click="cancelRecord(4)">
+            <Icon icon="cross" size="mid"></Icon>
+          </button>
+        </div>
+        <div v-if="realRecordPath4" :class="['existRecord',{'red-bg':isReadingRec4}]" @click="readAudio4">
+          录音2 长度:{{recordDuration4}}
+          <div @click.stop="deleteRecord(4)" style="display:flex;justify-content:center;">
+            <Icon icon="cross-white" size="mini"></Icon>
+          </div>
+        </div>
+        <div v-if="isCreate&&realPath4" class="img-preview">
+          <div @click="removeImg(4)" class="removeimg">
+            <Icon icon="cross-white" size="mini"></Icon>
+          </div>
+          <image class="preview" :src="realPath4" mode="aspectFill"></image>
+        </div>
+        <div class="add-tip">答案
+          <div class="font-num">{{answer.length}}/80</div>
+        </div>
+        <div class="front">
+          <textarea v-model="answer" class="front-input" cols="10" rows="3" maxlength="80"></textarea>
+        </div>
+        <div @click="submitQuesCard" class="submit-container">
+          <button class="submit">create</button>
         </div>
       </div>
-      <div v-if="isCreate&&realPath" class="img-preview">
-        <image class="preview" :src="realPath" mode="widthFill"></image>
-      </div>
-      <div v-if="isCreate" class="add-tip">卡片正面文字
-        <div class="font-num">{{frontWord.length}}/80</div>
-      </div>
-      <div v-if="isCreate" class="front">
-        <textarea v-model="frontWord" class="front-input" cols="10" rows="3" maxlength="80"></textarea>
-      </div>
-      <div v-if="isCreate" class="add-tip">卡片背面媒体</div>
-      <!-- <div v-if="isCreate&&!realPath2" @click="uploadImg2" class="img-container">
-        <Icon icon="add1"></Icon>
-      </div> -->
-      <div v-if="isCreate" class="media-container">
-        <div @click="beginRecord2">
-          <Icon icon="mic"></Icon>
-        </div>
-        <div @click="uploadImg2">
-          <Icon icon="image"></Icon>
-        </div>
-      </div>
-      <div v-if="isRecording2" class="record-tip">
-        <button @click="stopRecord2">
-          <Icon icon="dot-red" size="mid"></Icon>
-        </button>
-        <button @click="toggleRecord">
-          <Icon :icon="pauseRecord?'start':'pause'" size="mid"></Icon>
-        </button>
-        <button @click="cancelRecord2">
-          <Icon icon="cross" size="mid"></Icon>
-        </button>
-      </div>
-      <div v-if="realRecordPath2" class="existRecord">
-        录音2 长度:{{recordDuration2}}
-        <div @click="deleteRecord(2)" style="display:flex;justify-content:center;">
-          <Icon icon="cross-white" size="mini"></Icon>
-        </div>
-      </div>
-      <div v-if="isCreate&&realPath" @click="uploadImg" class="img-preview">
-        <image class="preview" :src="realPath" mode="widthFill"></image>
-      </div>
-      <div v-if="isCreate" class="add-tip">卡片背面文字
-        <div class="font-num">{{backWord.length}}/80</div>
-      </div>
-      <div v-if="isCreate" class="front">
-        <textarea v-model="backWord" class="front-input" cols="10" rows="3" maxlength="80"></textarea>
-      </div>
-      <div v-if="isCreate" @click="submitCard" class="submit-container">
-        <button class="submit">create</button>
-      </div>
+      
     </div>
     <div v-if="!isCreate" class="btn-container">
       <button @click="begin" class="begin">开 始</button>
@@ -106,6 +210,8 @@ import config from '@/config'
 export default {
   data () {
     return {
+      title: '',
+      title2: '',
       totalNum: '',
       taskNum: '',
       isCreate: false,
@@ -116,13 +222,20 @@ export default {
       // 图片的七牛云地址
       realPath: '',
       realPath2: '',
+      realPath3: '',
+      realPath4: '',
       // 卡片前面的文字
       frontWord: '',
       // 卡片背面文字
       backWord: '',
+      // 问题卡片的问题和答案
+      question: '',
+      answer: '',
       // 是否正在录音
       isRecording: false,
       isRecording2: false,
+      isRecording3: false,
+      isRecording4: false,
       // 录音的临时存储地址
       recordTempPath: '',
       // 是否暂停录音
@@ -133,14 +246,38 @@ export default {
       realRecordPath: '',
       // 七牛云录音地址2
       realRecordPath2: '',
+      // 七牛云录音地址3
+      realRecordPath3: '',
+      // 七牛云录音地址4
+      realRecordPath4: '',
       // 是否准备上传录音
       ready2uploadRec: false,
       // 是否准备上传录音2
       ready2uploadRec2: false,
+      // 是否准备上传录音3
+      ready2uploadRec3: false,
+      // 是否准备上传录音4
+      ready2uploadRec4: false,
       // 录音1的长度
       recordDuration1: '',
       // 录音2的长度
-      recordDuration2: ''
+      recordDuration2: '',
+      // 录音3的长度
+      recordDuration3: '',
+      // 录音4的长度
+      recordDuration4: '',
+      // 音频实例
+      audioContext1: '',
+      audioContext2: '',
+      audioContext3: '',
+      audioContext4: '',
+      // 是否暂停
+      isReadingRec1: false,
+      isReadingRec2: false,
+      isReadingRec3: false,
+      isReadingRec4: false,
+      // 选择的卡片类型
+      commonType: true
     }
   },
   components: {
@@ -162,16 +299,215 @@ export default {
     // }
   },
   methods: {
+    // 提交问题卡片
+    submitQuesCard () {
+      console.log('提交问题卡片')
+    },
+    toCommon () {
+      this.commonType = true
+    },
+    toQues () {
+      this.commonType = false
+    },
+    // 播放录音
+    readAudio1 () {
+      if (this.isReadingRec2 || this.isReadingRec3 || this.isReadingRec4) {
+        return
+      }
+      if (this.audioContext1 && this.audioContext1.paused) {
+        this.audioContext1.play()
+        return
+      } else if (this.audioContext1) {
+        this.audioContext1.pause()
+        return
+      }
+      wx.showLoading({
+        title: '咳咳..'
+      })
+      const audio = wx.createInnerAudioContext()
+      audio.autoplay = true
+      // 播放事件
+      audio.onPlay(() => {
+        this.isReadingRec1 = true
+        // 播放时执行
+        wx.hideLoading()
+        console.log('开始播放')
+      })
+      // 暂停事件
+      audio.onPause(() => {
+        this.isReadingRec1 = false
+        console.log('暂停')
+      })
+      // 结束事件
+      audio.onEnded(() => {
+        this.isReadingRec1 = false
+        this.audioContext1 = ''
+      })
+      // 错误事件
+      audio.onError((res) => {
+        this.$message.error(res)
+      })
+      // 设置audio的src
+      audio.src = this.realRecordPath
+      this.audioContext1 = audio
+    },
+    readAudio2 () {
+      if (this.isReadingRec1 || this.isReadingRec3 || this.isReadingRec4) {
+        return
+      }
+      if (this.audioContext2 && this.audioContext2.paused) {
+        this.audioContext2.play()
+        return
+      } else if (this.audioContext2) {
+        this.audioContext2.pause()
+        return
+      }
+      wx.showLoading({
+        title: '咳咳..'
+      })
+      const audio = wx.createInnerAudioContext()
+      audio.autoplay = true
+      // 播放事件
+      audio.onPlay(() => {
+        this.isReadingRec2 = true
+        // 播放时执行
+        wx.hideLoading()
+        console.log('开始播放')
+      })
+      // 暂停事件
+      audio.onPause(() => {
+        this.isReadingRec2 = false
+        console.log('暂停')
+      })
+      // 结束事件
+      audio.onEnded(() => {
+        this.isReadingRec2 = false
+        this.audioContext2 = ''
+      })
+      // 错误事件
+      audio.onError((res) => {
+        this.$message.error(res)
+      })
+      // 设置audio的src
+      audio.src = this.realRecordPath2
+      this.audioContext2 = audio
+    },
+    readAudio3 () {
+      if (this.isReadingRec1 || this.isReadingRec2 || this.isReadingRec4) {
+        return
+      }
+      if (this.audioContext3 && this.audioContext3.paused) {
+        this.audioContext3.play()
+        return
+      } else if (this.audioContext3) {
+        this.audioContext3.pause()
+        return
+      }
+      wx.showLoading({
+        title: '咳咳..'
+      })
+      const audio = wx.createInnerAudioContext()
+      audio.autoplay = true
+      // 播放事件
+      audio.onPlay(() => {
+        this.isReadingRec3 = true
+        // 播放时执行
+        wx.hideLoading()
+        console.log('开始播放')
+      })
+      // 暂停事件
+      audio.onPause(() => {
+        this.isReadingRec3 = false
+        console.log('暂停')
+      })
+      // 结束事件
+      audio.onEnded(() => {
+        this.isReadingRec3 = false
+        this.audioContext3 = ''
+      })
+      // 错误事件
+      audio.onError((res) => {
+        this.$message.error(res)
+      })
+      // 设置audio的src
+      audio.src = this.realRecordPath3
+      this.audioContext3 = audio
+    },
+    readAudio4 () {
+      if (this.isReadingRec1 || this.isReadingRec2 || this.isReadingRec3) {
+        return
+      }
+      if (this.audioContext4 && this.audioContext4.paused) {
+        this.audioContext4.play()
+        return
+      } else if (this.audioContext4) {
+        this.audioContext4.pause()
+        return
+      }
+      wx.showLoading({
+        title: '咳咳..'
+      })
+      const audio = wx.createInnerAudioContext()
+      audio.autoplay = true
+      // 播放事件
+      audio.onPlay(() => {
+        this.isReadingRec4 = true
+        // 播放时执行
+        wx.hideLoading()
+        console.log('开始播放')
+      })
+      // 暂停事件
+      audio.onPause(() => {
+        this.isReadingRec4 = false
+        console.log('暂停')
+      })
+      // 结束事件
+      audio.onEnded(() => {
+        this.isReadingRec4 = false
+        this.audioContext4 = ''
+      })
+      // 错误事件
+      audio.onError((res) => {
+        this.$message.error(res)
+      })
+      // 设置audio的src
+      audio.src = this.realRecordPath4
+      this.audioContext4 = audio
+    },
+    // 删除图片
+    removeImg (num = 1) {
+      if (num === 1) {
+        this.realPath = ''
+      } else if (num === 2) {
+        this.realPath2 = ''
+      } else if (num === 3) {
+        this.realPath3 = ''
+      } else {
+        this.realPath4 = ''
+      }
+    },
     // 删除录音
     deleteRecord (num) {
       if (num === 1) {
         console.log('删除录音1')
+        this.audioContext1 = ''
         this.realRecordPath = ''
         this.recordDuration1 = ''
-      } else {
+      } else if (num === 2) {
         console.log('删除录音2')
+        this.audioContext2 = ''
         this.realRecordPath2 = ''
         this.recordDuration2 = ''
+      } else if (num === 3) {
+        console.log('删除录音3')
+        this.audioContext3 = ''
+        this.realRecordPath3 = ''
+        this.recordDuration3 = ''
+      } else {
+        console.log('删除录音4')
+        this.audioContext4 = ''
+        this.realRecordPath4 = ''
+        this.recordDuration4 = ''
       }
     },
     // 暂停/重新开始录音
@@ -188,54 +524,53 @@ export default {
       }
     },
     // 取消录音
-    cancelRecord () {
-      this.isRecording = false
-      this.pauseRecord = false
-      console.log('取消录音')
-      this.recorderManager.stop()
-    },
-    // 取消录音2
-    cancelRecord2 () {
-      this.isRecording2 = false
+    cancelRecord (num = 1) {
+      if (num === 1) {
+        this.isRecording = false
+      } else if (num === 2) {
+        this.isRecording2 = false
+      } else if (num === 3) {
+        this.isRecording3 = false
+      } else if (num === 4) {
+        this.isRecording4 = false
+      }
       this.pauseRecord = false
       console.log('取消录音')
       this.recorderManager.stop()
     },
     // 完成录音
-    stopRecord () {
-      this.isRecording = false
+    stopRecord (num = 1) {
+      if (num === 1) {
+        this.isRecording = false
+        this.ready2uploadRec = true
+      } else if (num === 2) {
+        this.isRecording2 = false
+        this.ready2uploadRec2 = true
+      } else if (num === 3) {
+        this.isRecording3 = false
+        this.ready2uploadRec3 = true
+      } else {
+        this.isRecording4 = false
+        this.ready2uploadRec4 = true
+      }
       this.pauseRecord = false
-      this.ready2uploadRec = true
       this.recorderManager.stop()
     },
-    // 完成录音2
-    stopRecord2 () {
-      this.isRecording2 = false
-      this.pauseRecord = false
-      this.ready2uploadRec2 = true
-      this.recorderManager.stop()
-    },
+
     // 开始录音
-    beginRecord () {
+    beginRecord (num = 1) {
       if (this.isRecording) {
         return
       }
-      this.isRecording = true
-      const options = {
-        sampleRate: 44100,
-        numberOfChannels: 1,
-        encodeBitRate: 192000,
-        format: 'mp3'
-        // frameSize: 50
+      if (num === 1) {
+        this.isRecording = true
+      } else if (num === 2) {
+        this.isRecording2 = true
+      } else if (num === 3) {
+        this.isRecording3 = true
+      } else if (num === 4) {
+        this.isRecording4 = true
       }
-      this.recorderManager.start(options)
-    },
-    // 开始录音2
-    beginRecord2 () {
-      if (this.isRecording) {
-        return
-      }
-      this.isRecording2 = true
       const options = {
         sampleRate: 44100,
         numberOfChannels: 1,
@@ -256,12 +591,15 @@ export default {
       })
       const openId = wx.getStorageSync('userInfo').openId
       const res = await this.$request(`${config.host}/word/addCard`, 'POST', {
+        title: this.title,
         openId,
         isFree: 0,
         img: this.realPath,
         img2: this.realPath2,
         freeFront: this.frontWord,
-        freeBack: this.backWord
+        freeBack: this.backWord,
+        rec1: this.realRecordPath,
+        rec2: this.realRecordPath2
       })
       wx.hideLoading()
       if (res.success) {
@@ -271,11 +609,21 @@ export default {
     },
     // 取消创建
     cancelCreate () {
+      this.title = ''
       this.isCreate = false
       this.backWord = ''
       this.frontWord = ''
+      this.question = ''
+      this.answer = ''
       this.realPath = ''
       this.realPath2 = ''
+      this.realPath3 = ''
+      this.realPath4 = ''
+      this.recordTempPath = ''
+      this.realRecordPath = ''
+      this.realRecordPath2 = ''
+      this.realRecordPath3 = ''
+      this.realRecordPath4 = ''
     },
     // 获取七牛云临时token
     async getToken () {
@@ -308,11 +656,17 @@ export default {
           console.log('num', num)
           if (num === 1) {
             that.realRecordPath = `${config.imgHost}/${JSON.parse(res.data).key}`
-          } else {
+          } else if (num === 2) {
             that.realRecordPath2 = `${config.imgHost}/${JSON.parse(res.data).key}`
+          } else if (num === 3) {
+            that.realRecordPath3 = `${config.imgHost}/${JSON.parse(res.data).key}`
+          } else {
+            that.realRecordPath4 = `${config.imgHost}/${JSON.parse(res.data).key}`
           }
           that.ready2uploadRec = false
           that.ready2uploadRec2 = false
+          that.ready2uploadRec3 = false
+          that.ready2uploadRec4 = false
         },
         fail: function (err) {
           console.log(err)
@@ -345,35 +699,26 @@ export default {
           wx.hideLoading()
           if (num === 1) {
             that.realPath = `${config.imgHost}/${JSON.parse(res.data).key}`
-          } else {
+          } else if (num === 2) {
             that.realPath2 = `${config.imgHost}/${JSON.parse(res.data).key}`
+          } else if (num === 3) {
+            that.realPath3 = `${config.imgHost}/${JSON.parse(res.data).key}`
+          } else if (num === 4) {
+            that.realPath4 = `${config.imgHost}/${JSON.parse(res.data).key}`
           }
         }
       })
     },
     // 上传图片
-    uploadImg () {
+    uploadImg (num = 1) {
       let that = this
       wx.chooseImage({
-        count: 2,
+        count: 1,
         size: ['original'],
         sourceType: ['album', 'camera'],
         success (res) {
           that.tempPath = res.tempFilePaths[0]
-          that.uploadImgToQiniu(1)
-        }
-      })
-    },
-    // 上传图片
-    uploadImg2 () {
-      let that = this
-      wx.chooseImage({
-        count: 2,
-        size: ['original'],
-        sourceType: ['album', 'camera'],
-        success (res) {
-          that.tempPath = res.tempFilePaths[0]
-          that.uploadImgToQiniu(2)
+          that.uploadImgToQiniu(num)
         }
       })
     },
@@ -383,11 +728,13 @@ export default {
     },
     // 点击开始学习
     begin () {
+      this.$store.route = 'remember'
       wx.navigateTo({
         url: '/pages/remember/main'
       })
     },
     searchFocus () {
+      this.$store.route = 'search'
       wx.navigateTo({
         url: '/pages/search/main'
       })
@@ -403,7 +750,7 @@ export default {
       setTimeout(() => {
         wx.hideNavigationBarLoading()
       }, 500)
-    }
+    },
     // async getTask () {
     //   wx.showNavigationBarLoading()
     //   const openId = await wx.getStorageSync('userInfo').openId
@@ -413,6 +760,52 @@ export default {
     //     wx.hideNavigationBarLoading()
     //   }, 500)
     // }
+    // 新建录音实例
+    createAudioManager () {
+      // 新建录音实例
+      const recorderManager = wx.getRecorderManager()
+      // 开始事件
+      recorderManager.onStart(() => {
+        console.log('recorder start')
+      })
+      // 暂停事件
+      recorderManager.onPause(() => {
+        console.log('recorder pause')
+      })
+      // 重新开始录音事件
+      recorderManager.onResume(() => {
+        console.log('recorder resume')
+      })
+      // 错误事件
+      recorderManager.onError((err) => {
+        console.log('recorder err', err)
+      })
+      // 结束事件
+      recorderManager.onStop((res) => {
+        console.log('recorder stop', res)
+        const { tempFilePath } = res
+        console.log('tempFIlePath', tempFilePath)
+        this.recordTempPath = tempFilePath
+        if (this.ready2uploadRec) {
+          this.recordDuration1 = `${Math.ceil(res.duration / 1000)}s`
+          this.uploadRecordToQiniu(1)
+        } else if (this.ready2uploadRec2) {
+          this.recordDuration2 = `${Math.ceil(res.duration / 1000)}s`
+          this.uploadRecordToQiniu(2)
+        } else if (this.ready2uploadRec3) {
+          this.recordDuration3 = `${Math.ceil(res.duration / 1000)}s`
+          this.uploadRecordToQiniu(3)
+        } else {
+          this.recordDuration4 = `${Math.ceil(res.duration / 1000)}s`
+          this.uploadRecordToQiniu(4)
+        }
+      })
+      // recorderManager.onFrameRecorded((res) => {
+      //   const { frameBuffer } = res
+      //   console.log('frameBuffer.byteLength', frameBuffer.byteLength)
+      // })
+      this.recorderManager = recorderManager
+    }
   },
   mounted () {
     wx.showShareMenu({
@@ -422,43 +815,8 @@ export default {
     this.getNum()
     // 获取七牛云token
     this.getToken()
-    // 新建录音实例
-    const recorderManager = wx.getRecorderManager()
-    // 开始事件
-    recorderManager.onStart(() => {
-      console.log('recorder start')
-    })
-    // 暂停事件
-    recorderManager.onPause(() => {
-      console.log('recorder pause')
-    })
-    // 重新开始录音事件
-    recorderManager.onResume(() => {
-      console.log('recorder resume')
-    })
-    // 错误事件
-    recorderManager.onError((err) => {
-      console.log('recorder err', err)
-    })
-    // 结束事件
-    recorderManager.onStop((res) => {
-      console.log('recorder stop', res)
-      const { tempFilePath } = res
-      console.log('tempFIlePath', tempFilePath)
-      this.recordTempPath = tempFilePath
-      if (this.ready2uploadRec) {
-        this.recordDuration1 = `${Math.ceil(res.duration / 1000)}s`
-        this.uploadRecordToQiniu(1)
-      } else if (this.ready2uploadRec2) {
-        this.recordDuration2 = `${Math.ceil(res.duration / 1000)}s`
-        this.uploadRecordToQiniu(2)
-      }
-    })
-    // recorderManager.onFrameRecorded((res) => {
-    //   const { frameBuffer } = res
-    //   console.log('frameBuffer.byteLength', frameBuffer.byteLength)
-    // })
-    this.recorderManager = recorderManager
+    this.createAudioManager()
+
     wx.loadFontFace({
       family: 'worksans',
       source: 'url("https://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
@@ -486,6 +844,105 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.common-card{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  .img-preview{
+    margin: 30rpx 0;
+    width: 420rpx;
+    height: 280rpx;
+    overflow: hidden;
+    position: relative;
+    .preview{
+      // display: inline;
+      width: 420rpx;
+      border-radius: 20rpx;
+    }
+    .removeimg{
+      position: absolute;
+      right: 20rpx;
+      top:20rpx;
+    }
+  }
+  .img-tip{
+    width: 60%;
+    text-align: center;
+    margin: 20rpx 0;
+    font-size: 28rpx;
+    color: #64656a;
+  }
+  .media-container{
+    width: 400rpx;
+    display: flex;
+    justify-content: space-around;
+    margin: 30rpx 0;
+  }
+  .title-container{
+    width: 460rpx;
+    input{
+      width: 400rpx;
+      height: 60rpx;
+      padding: 5rpx 30rpx;
+      border-radius: 35rpx;
+      font-size: 32rpx;
+      background: #EEE;
+    }
+  }
+  .add-tip{
+    margin: 20rpx;
+    font-size: 32rpx;
+    width: 60%;
+    text-align: left;
+    
+    .font-num{
+      display: inline-block;
+      float: right;
+      font-size: 28rpx;
+      color: #64656a;
+    }
+  }
+  .front{
+    .front-input{
+      background: #EEE;
+      height: 200rpx;
+      padding: 30rpx;
+      font-size: 28rpx;
+      border-radius: 10rpx;
+      width: 400rpx;
+    }
+  }
+}
+.choose-type{
+  background: #EEE;
+}
+.choose-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 30rpx 0;
+  button{
+    font-size: 32rpx;
+    text-align: right;
+  }
+  .left-btn{
+    border-top-left-radius: 30rpx;
+    border-bottom-left-radius: 30rpx;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  .right-btn{
+    border-top-right-radius: 30rpx;
+    border-bottom-right-radius: 30rpx;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+}
+.red-bg{
+  background: red !important;
+}
 .existRecord {
   font-size: 32rpx;
   color: #FFF;
@@ -500,6 +957,7 @@ export default {
   height: 60rpx;
 }
 .record-tip{
+  margin-bottom: 30rpx;
   padding: 30rpx 0;
   width: 400rpx;
   border-radius: 40rpx;
@@ -532,11 +990,11 @@ export default {
   }
 }
 .max-height{
-  height:1800rpx !important;
+  height:2300rpx !important;
   justify-content: flex-start;
 } 
 .page-container{
-  transition: all 0.2s;
+  transition: all 0.6s;
   height: 700rpx;
   display: flex;
   flex-direction: column;
@@ -553,61 +1011,8 @@ export default {
     left: 30rpx;
     top: 120rpx;
   }
-  .img-container{
-    width: 300rpx;
-    height: 300rpx;
-    border: 3px #999 dashed;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 20rpx 0;
-  }
-  .img-preview{
-    width: 420rpx;
-    height: 280rpx;
-    overflow: hidden;
-    .preview{
-      // display: inline;
-      width: 420rpx;
-      border-radius: 20rpx;
-    }
-  }
-  .img-tip{
-    width: 60%;
-    text-align: center;
-    margin: 20rpx 0;
-    font-size: 28rpx;
-    color: #64656a;
-  }
-  .media-container{
-    width: 400rpx;
-    display: flex;
-    justify-content: space-around;
-    margin: 30rpx 0;
-  }
-  .add-tip{
-    margin: 20rpx;
-    font-size: 32rpx;
-    width: 60%;
-    text-align: left;
-    
-    .font-num{
-      display: inline-block;
-      // float: right;
-      font-size: 28rpx;
-      color: #64656a;
-    }
-  }
-  .front{
-    .front-input{
-      background: #EEE;
-      height: 200rpx;
-      padding: 30rpx;
-      font-size: 28rpx;
-      border-radius: 10rpx;
-      width: 400rpx;
-    }
-  }
+
+
   .submit-container{
     margin-top: 60rpx;
     width: 430rpx;
@@ -643,6 +1048,7 @@ export default {
     justify-content: center;
     align-items: center;
     .main-num{
+      min-height: 200rpx;
       font-size: 200rpx;
       font-family: 'Bold',
     }

@@ -5,7 +5,7 @@
       <div class="title">My Card {{cards.length}}</div>
     </div>
     <div v-if="cards&&cards.length>0" :class="[{'up':cardShow},'content-container']">
-      <countcard v-for="(card,index) in showList" :key="index" :cardInfo="card"></countcard>
+      <countcard @deleteCard="getMyCards" v-for="(card,index) in showList" :key="index" :cardInfo="card"></countcard>
     </div>
     <div v-if="!toEnd&&cards.length>0" class="bottom-tip">{{bottomLoading?tip2:tip1}}</div>
     <div v-if='toEnd&&cards.length>0' class="bottom-tip">{{tip3}}</div>
@@ -50,6 +50,16 @@ export default {
       this.cards = res.cards
       wx.hideLoading()
       // this.cardShow = true
+    },
+    loadFonts () {
+      wx.loadFontFace({
+        family: 'worksans',
+        source: 'url("https://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
+      })
+      wx.loadFontFace({
+        family: 'Bold',
+        source: 'url("https://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
+      })
     }
   },
 
@@ -63,28 +73,21 @@ export default {
     }, 500)
   },
   onPullDownRefresh () {
+    this.index = 1
     this.getMyCards()
   },
   onShow () {
-    this.cards = []
     this.getMyCards()
     this.index = 1
+    // this.loadFonts()
   },
   async mounted () {
-    wx.loadFontFace({
-      family: 'worksans',
-      source: 'url("https://img.xhfkindergarten.cn/WorkSans-Thin.woff.ttf")'
-    })
-    wx.loadFontFace({
-      family: 'Bold',
-      source: 'url("https://img.xhfkindergarten.cn/ADAM.CG%20PRO.otf")'
-    })
-
     await this.getMyCards()
     setTimeout(() => {
       this.cardShow = true
     }, 500)
     // this.cardShow = true
+    this.loadFonts()
   }
 }
 </script>
@@ -101,7 +104,7 @@ export default {
     color: #706F74;
   }
   .content-container{
-    transition: top 1s;
+    transition: top 0.2s;
     position: relative;
     top: 800rpx;
     margin: 0 auto;

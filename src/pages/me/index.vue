@@ -193,12 +193,14 @@ export default {
     },
     // 重新选择资料书
     reSelect () {
+      const that = this
       wx.showModal({
         title: 'info',
         content: '重新选择资料书,Abandon依然会为你保留当前资料书的进度(*＾ワ＾*)',
         success (res) {
           if (res.confirm) {
             console.log('confirm reselect')
+            that.$store.route = 'select'
             wx.navigateTo({
               url: '/pages/select/main'
             })
@@ -208,6 +210,7 @@ export default {
     },
     // 点击我的卡片
     toMyCard () {
+      this.$store.route = 'myCard'
       wx.navigateTo({
         url: '/pages/myCard/main'
       })

@@ -31,6 +31,14 @@ export default {
     //   source: 'url("http://img.xhfkindergarten.cn/NeuropolXRg-Regular.ttf")'
     // })
   },
+  onHide () {
+    console.log(this.$store.route)
+    if (!this.$store.previewImg && (this.$store.route === 'vocGroup' || this.$store.route === 'remember')) {
+      wx.navigateBack({
+        delta: 1
+      })
+    }
+  },
   log () {
     console.log(`log at:${Date.now()}`)
   }

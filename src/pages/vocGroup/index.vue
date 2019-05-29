@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container">
+  <div :class="['page-container',{'background':index==20}]">
     <div :class="[{'down':down},{'left':left},{'right':right},'card-container']">
       <wordcard v-if="cardInfo" :wordInfo="cardInfo"></wordcard>
     </div>
@@ -17,7 +17,7 @@
         <button @click="getMore" class="more">继续</button>
       </div>
     </div>
-    <div :class="[{'fadein':task.length>0},'bottom-container']">
+    <div :class="[{'fadein':task.length>0&&index!==20},'bottom-container']">
       <button @click="remove">
         <Icon icon="cross2"></Icon>
       </button>
@@ -140,6 +140,7 @@ export default {
       console.log(res)
     },
     backTo () {
+      this.$store.route = 'main'
       wx.switchTab({
         url: '/pages/main/main'
       })
@@ -252,7 +253,7 @@ export default {
   position: relative;
   left: 0;
   top: -800rpx;
-  transition: all 0.9s;
+  transition: all 0.4s;
   // animation: down 1s ease-in-out forwards;
 }
 // @-webkit-keyframes appear {
@@ -360,6 +361,7 @@ export default {
 //   to {position: relative; top: 0;}
 // }
 .page-container{
+  min-height: 100vh;
   padding-bottom: 200rpx;
 }
 @font-face {font-family: 'siyuanheiti';
@@ -368,6 +370,9 @@ export default {
   url('//at.alicdn.com/t/webfont_1aw5gdz0gry.woff') format('woff'), /* chrome、firefox */
   url('//at.alicdn.com/t/webfont_1aw5gdz0gry.ttf') format('truetype'), /* chrome、firefox、opera、Safari, Android, iOS 4.2+*/
   url('//at.alicdn.com/t/webfont_1aw5gdz0gry.svg#NotoSansHans-Black') format('svg'); /* iOS 4.1- */
+}
+.background {
+  background-image: url('https://img.xhfkindergarten.cn/toptal-blog-image-1501178946393-ce513b02e7d488a192ed06a88c2f2759.png')
 }
 </style>
 
