@@ -12,8 +12,8 @@
       </div>
       <div v-if="hasDetail" style="width:90%;">
         <div class="pron" v-for="pron in vocDetail.symbols" :key="pron.ph_en">
-          <div @click="audioUk(pron)" class="uk">英 {{pron.ph_en}}<img src="/static/icon/sound.png"></div>
-          <div @click="audioUs(pron)" class="uk">美 {{pron.ph_am}}<img src="/static/icon/sound.png"></div>
+          <div @click="audioUk(pron)" class="uk">英 {{pron.ph_en}}<img v-if="pron.ph_en_mp3" src="/static/icon/sound.png"></div>
+          <div @click="audioUs(pron)" class="uk">美 {{pron.ph_am}}<img v-if="pron.ph_am_mp3" src="/static/icon/sound.png"></div>
           <div v-for="(part,_index) in pron.parts" :key="_index" class="meaning">
             {{part.part}} {{part.means}}
           </div>
@@ -153,6 +153,7 @@ export default {
         wx.navigateTo({
           url: '/pages/select/main'
         })
+        return
       }
       if (!this.vocDetail) {
         this.$store.route = 'vocGroup'
@@ -165,6 +166,9 @@ export default {
       this.showSent = !this.showSent
     },
     audioUk (pron) {
+      if (!pron.ph_en_mp3) {
+        return
+      }
       wx.showLoading({
         title: '咳咳..'
       })
@@ -181,6 +185,9 @@ export default {
       })
     },
     audioUs (pron) {
+      if (!pron.ph_am_mp3) {
+        return
+      }
       wx.showLoading({
         title: '咳咳..'
       })

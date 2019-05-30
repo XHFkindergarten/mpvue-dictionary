@@ -56,7 +56,7 @@
           </div>
           <image class="preview" :src="realPath" mode="aspectFill"></image>
         </div>
-        <div class="add-tip">正面文字
+        <div class="add-tip">正面文字<span style="color:red">*</span>
           <div class="font-num">{{frontWord.length}}/80</div>
         </div>
         <div class="front">
@@ -97,11 +97,14 @@
           </div>
           <image class="preview" :src="realPath2" mode="aspectFill"></image>
         </div>
-        <div class="add-tip">背面文字
+        <div class="add-tip">背面文字<span style="color:red">*</span>
           <div class="font-num">{{backWord.length}}/80</div>
         </div>
         <div class="front">
           <textarea v-model="backWord" class="front-input" cols="10" rows="3" maxlength="80"></textarea>
+        </div>
+        <div class="switch">
+          是否开启随机正反面<switch color="#587AA5" v-model="randomSide" @change="toggleSwitch"></switch>
         </div>
         <div @click="submitCard" class="submit-container">
           <button class="submit">create</button>
@@ -144,7 +147,7 @@
           </div>
           <image class="preview" :src="realPath3" mode="aspectFill"></image>
         </div>
-        <div class="add-tip">描述问题
+        <div class="add-tip">描述问题<span style="color:red">*</span>
           <div class="font-num">{{question.length}}/80</div>
         </div>
         <div class="front">
@@ -185,7 +188,7 @@
           </div>
           <image class="preview" :src="realPath4" mode="aspectFill"></image>
         </div>
-        <div class="add-tip">答案
+        <div class="add-tip">答案<span style="color:red">*</span>
           <div class="font-num">{{answer.length}}/80</div>
         </div>
         <div class="front">
@@ -277,7 +280,9 @@ export default {
       isReadingRec3: false,
       isReadingRec4: false,
       // 选择的卡片类型
-      commonType: true
+      commonType: true,
+      // 是否开启随机正反面
+      randomSide: false
     }
   },
   components: {
@@ -299,9 +304,40 @@ export default {
     // }
   },
   methods: {
+    // 切换随机面
+    toggleSwitch (e) {
+      if (e.target.value) {
+        this.randomSide = true
+      } else {
+        this.randomSide = false
+      }
+    },
     // 提交问题卡片
-    submitQuesCard () {
-      console.log('提交问题卡片')
+    async submitQuesCard () {
+      if (!this.question || !this.answer) {
+        this.$message.warning('请完善卡片信息')
+        return
+      }
+      wx.showLoading({
+        title: '添加卡片中...'
+      })
+      const openId = wx.getStorageSync('userInfo').openId
+      const res = await this.$request(`${config.host}/word/addCard`, 'POST', {
+        title: this.title2,
+        openId,
+        isFree: 2,
+        img: this.realPath3,
+        img2: this.realPath4,
+        freeFront: this.question,
+        freeBack: this.answer,
+        rec1: this.realRecordPath3,
+        rec2: this.realRecordPath4
+      })
+      wx.hideLoading()
+      if (res.success) {
+        this.$message.success('添加卡片成功!')
+        this.cancelCreate()
+      }
     },
     toCommon () {
       this.commonType = true
@@ -589,6 +625,8 @@ export default {
       wx.showLoading({
         title: '添加卡片中...'
       })
+      // this.frontWord.replaceAll(' ', '&nbsp;').replaceAll('\r', '<br/>')
+      // this.backWord.replaceAll(' ', '&nbsp;').replaceAll('\r', '<br/>')
       const openId = wx.getStorageSync('userInfo').openId
       const res = await this.$request(`${config.host}/word/addCard`, 'POST', {
         title: this.title,
@@ -599,7 +637,8 @@ export default {
         freeFront: this.frontWord,
         freeBack: this.backWord,
         rec1: this.realRecordPath,
-        rec2: this.realRecordPath2
+        rec2: this.realRecordPath2,
+        randomSide: this.randomSide ? 0 : 1
       })
       wx.hideLoading()
       if (res.success) {
@@ -624,6 +663,7 @@ export default {
       this.realRecordPath2 = ''
       this.realRecordPath3 = ''
       this.realRecordPath4 = ''
+      this.randomSide = false
     },
     // 获取七牛云临时token
     async getToken () {
@@ -899,7 +939,7 @@ export default {
     
     .font-num{
       display: inline-block;
-      // float: right;
+      float: right;
       font-size: 28rpx;
       color: #64656a;
     }
@@ -913,6 +953,15 @@ export default {
       border-radius: 10rpx;
       width: 400rpx;
     }
+  }
+  .switch{
+    font-size: 32rpx;
+    height: 80rpx;
+    display: flex;
+    justify-content: left;
+    width: 60%;
+    margin:20rpx;
+    align-items: center;
   }
 }
 .choose-type{
@@ -990,7 +1039,7 @@ export default {
   }
 }
 .max-height{
-  height:2300rpx !important;
+  height:2450rpx !important;
   justify-content: flex-start;
 } 
 .page-container{

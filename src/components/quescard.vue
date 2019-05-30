@@ -1,5 +1,5 @@
 <template>
-  <div class="card-container" @click="changeSide">
+  <div @click="changeSide" class="card-container">
     <div v-if="(cardSide&&wordInfo.rec1)||(!cardSide&&wordInfo.rec2)" @click.stop="readRec" class="rec-container">
       <Icon v-if="!isReading" icon="start" size="mid"></Icon>
       <Icon v-else icon="start-red" size="mid"></Icon>
@@ -9,16 +9,30 @@
       <image class="pic" :src="currentPic" mode="aspectFit"></image>
     </div>
     <div class="content-container">
-      <div class="frontword" v-if="cardSide">
-        <span v-html="front"></span>
+      <div class="frontword">
+        <span v-html="question"></span>
       </div>
-      <div class="backword" v-else>
-        <span v-html="back"></span>
+      <div class="backword" v-if="!cardSide">
+        <div class="answer" v-html="answer"></div>
+        <div class="answer-tip">comparison result</div>
+        <div class="compareres" v-html="res[0]"></div>
+        <div style="padding:20rpx;" class="compareres" v-html="res[1]"></div>
       </div>
     </div>
+    <div v-if="cardSide" class="input-container">
+      <input v-model="userinput" type="text">
+    </div>
+    <div v-if="cardSide" class="btn-container">
+      <button @click.stop="checkAns">
+        <Icon icon="right-gray"></Icon>
+      </button>
+    </div>
+    <!-- <div v-html="res[0]"></div>
+    <div v-html="res[1]"></div> -->
   </div>
 </template>
 <script>
+import compare from '../utils/compare'
 import Icon from '@/components/Icon'
 export default {
   data () {
@@ -28,7 +42,10 @@ export default {
       // 卡片的正反面
       cardSide: true,
       // 是否正在播放
-      isReading: false
+      isReading: false,
+      // 输入的答案
+      userinput: '',
+      res: ''
     }
   },
   components: {
@@ -56,19 +73,34 @@ export default {
         return ''
       }
     },
-    front () {
-      const reg = /\n/
+    question () {
+      const reg = /\n/g
       return this.wordInfo.freeFront.replace(reg, '<br>')
     },
-    back () {
-      const reg = /\n/
+    answer () {
+      const reg = /\n/g
       return this.wordInfo.freeBack.replace(reg, '<br>')
     }
   },
   props: [
     'wordInfo'
   ],
+  watch: {
+    cardSide (newValue) {
+      console.log(newValue)
+    }
+  },
   methods: {
+    // 检查答案
+    checkAns () {
+      console.log('check answer')
+      const answer = this.wordInfo.freeBack
+      const input = this.userinput
+      const res = compare(answer, input)
+      this.res = res
+      this.cardSide = false
+      console.log('ok')
+    },
     // 播放录音
     readRec () {
       // 发出震动
@@ -103,25 +135,20 @@ export default {
       })
     },
     changeSide () {
+      // 没有检查答案之前不能翻面
+      if (!this.res || this.cardSide) {
+        return
+      }
       this.cardSide = !this.cardSide
     }
   },
   mounted () {
     this.$store.previewImg = false
-    if (this.wordInfo.isFree === 0 && this.wordInfo.randomSide === 0) {
-      const random = Math.ceil(Math.random() * 2)
-      if (random === 1) {
-        this.cardSide = true
-        console.log('随机显示正面')
-      } else {
-        this.cardSide = false
-        console.log('随机显示反面')
-      }
-    }
   }
 }
 </script>
 <style lang="less" scoped>
+
 .title{
   width: 90%;
   padding-left: 30rpx;
@@ -154,23 +181,56 @@ export default {
       // object-fit: scale-down;
     }
   }
+  .input-container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    input{
+      height: 80rpx;
+      border-radius: 40rpx;
+      font-size: 30rpx;
+      padding: 0 30rpx;
+      width: 80%;
+      background: #EEE;
+    }
+  }
+  .btn-container{
+    margin-top: 30rpx;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
   .content-container{
-    padding: 30rpx 30rpx 60rpx;
+    padding: 30rpx 0 0 30rpx;
     font-size: 32rpx;
     background: #F6F6F6;
     width: 100%;
     font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
     .frontword{
       width: 90%;
-      margin: 10rpx 0;
+      margin: 10rpx 0 30rpx;
       color: #000;
       word-wrap: break-word;
     }
     .backword{
       width: 90%;
-      margin: 10rpx 0;
-      color: #000;
-      word-wrap: break-word;
+      
+      .answer{
+        font-size: 34rpx;
+        margin: 20rpx 0;
+        color: #000;
+        word-wrap: break-word;
+      }
+      .answer-tip{
+        text-align: left;
+        color: #000;
+        word-wrap: break-word;
+        margin-top: 10rpx;
+      }
+      .compareres{
+        text-align: center;
+        margin: 10rpx 0;
+      }
     }
   }
 }

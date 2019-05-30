@@ -1,10 +1,10 @@
 <template>
   <div class="page-container">
-    <div class="add-tip" style="margin-top:50rpx">卡片标题</div>
+    <div class="add-tip" style="margin-top:50rpx">{{cardInfo.isFree===0?'卡片标题':'问题标题'}}</div>
     <div class="title-container">
       <input type="text" v-model="cardInfo.title">
     </div>
-    <div class="add-tip">卡片正面媒体</div>
+    <div class="add-tip">{{cardInfo.isFree===0?'正面媒体':'问题媒体'}}</div>
     <div class="media-container">
       <div @click="beginRecord">
         <Icon icon="mic"></Icon>
@@ -36,13 +36,13 @@
       </div>
       <image class="preview" :src="cardInfo.img" mode="aspectFill"></image>
     </div>
-    <div class="add-tip">卡片正面文字
+    <div class="add-tip">{{cardInfo.isFree===0?'正面文字':'问题描述'}}
       <div v-if="cardInfo.freeFront" class="font-num">{{cardInfo.freeFront.length}}/80</div>
     </div>
     <div class="front">
       <textarea v-model="cardInfo.freeFront" class="front-input" maxlength="80"></textarea>
     </div>
-    <div class="add-tip">卡片背面媒体</div>
+    <div class="add-tip">{{cardInfo.isFree===0?'背面媒体':'答案媒体'}}</div>
     <div class="media-container">
       <div @click="beginRecord2">
         <Icon icon="mic"></Icon>
@@ -74,11 +74,14 @@
       </div>
       <image class="preview" :src="cardInfo.img2" mode="aspectFill"></image>
     </div>
-    <div class="add-tip">卡片背面文字
+    <div class="add-tip">{{cardInfo.isFree===0?'背面文字':'答案描述'}}
       <div v-if="cardInfo.freeBack" class="font-num">{{cardInfo.freeBack.length}}/80</div>
     </div>
     <div class="front">
       <textarea v-model="cardInfo.freeBack" class="front-input" cols="10" rows="3" maxlength="80"></textarea>
+    </div>
+    <div class="switch">
+      是否开启随机正反面<switch :checked="randomSide" color="#587AA5" @change="toggleRandom"></switch>
     </div>
     <div class="btn-container">
       <button @click="updateCard" class="update">update</button>
@@ -134,25 +137,35 @@ export default {
       audioContext2: '',
       // 是否暂停
       isReadingRec1: false,
-      isReadingRec2: false
+      isReadingRec2: false,
+      randomSide: false
     }
   },
   components: {
     Icon
   },
   computed: {
+
   },
   methods: {
+    toggleRandom (e) {
+      if (e.target.value) {
+        this.randomSide = true
+      } else {
+        this.randomSide = false
+      }
+    },
     // 更新卡片
     async updateCard () {
       const params = {
         id: this.cardInfo.id,
-        img1: this.cardInfo.img1,
+        img: this.cardInfo.img,
         img2: this.cardInfo.img2,
         rec1: this.cardInfo.rec1,
         rec2: this.cardInfo.rec2,
         freeFront: this.cardInfo.freeFront,
-        freeBack: this.cardInfo.freeBack
+        freeBack: this.cardInfo.freeBack,
+        randomSide: this.randomSide ? 0 : 1
       }
       wx.showLoading({
         title: '上传ing'
@@ -290,7 +303,7 @@ export default {
     uploadImg () {
       let that = this
       wx.chooseImage({
-        count: 2,
+        count: 1,
         size: ['original'],
         sourceType: ['album', 'camera'],
         success (res) {
@@ -303,7 +316,7 @@ export default {
     uploadImg2 () {
       let that = this
       wx.chooseImage({
-        count: 2,
+        count: 1,
         size: ['original'],
         sourceType: ['album', 'camera'],
         success (res) {
@@ -495,14 +508,28 @@ export default {
   onLoad (option) {
     this.id = option.id
   },
+  watch: {
+    cardInfo (newValue, oldValue) {
+      console.log('cardInfo change', newValue)
+    }
+  },
   async mounted () {
+    this.cardInfo = ''
     await this.getCardInfo()
     await this.createAudioManager()
     await this.getToken()
-  },
-  onShow () {
-    this.cardInfo = ''
+    if (this.cardInfo.randomSide === 0) {
+      this.randomSide = true
+    } else {
+      this.randomSide = false
+    }
   }
+  // onShow () {
+  //   this.cardInfo = ''
+  // }
+  // onHide () {
+  //   console.log('onHide')
+  // }
 }
 </script>
 <style lang="less" scoped>
@@ -552,6 +579,12 @@ export default {
       border-radius: 10rpx;
       width: 460rpx;
     }
+  }
+  .switch{
+    padding: 60rpx;
+    font-size: 34rpx;
+    width: 500rpx;
+    text-align: left;
   }
   .img-preview{
     margin: 30rpx 0;
@@ -620,7 +653,7 @@ export default {
     // margin-top: 60rpx;
     .font-num{
       display: inline-block;
-      // float: right;
+      float: right;
       font-size: 28rpx;
       color: #64656a;
     }

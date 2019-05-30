@@ -19,10 +19,10 @@
         </div>
       </div>
       <div class="right-container">
-        <div class="switch">
+        <!-- <div class="switch">
           <div class="text">Test Mode</div>
           <switch style="margin-top:20rpx;" :checked="isTest" v-model="isTest" color="#587AA5" @change="toggleMode"></switch>
-        </div>
+        </div> -->
         <div class="reselect" @click="reSelect">
           <Icon icon="bookmark" size="large"></Icon>
           <div class="text">reselect book</div>
@@ -370,6 +370,7 @@ export default {
       justify-content: center;
       align-items: center;
       flex-direction: column;
+      border-bottom-left-radius: 40rpx;
       .text{
         font-family: 'Bold';
         text-align: center;
@@ -385,12 +386,13 @@ export default {
     .punch{
       margin-top: 16rpx;
       width: 100%;
-      padding: 40rpx 0;
+      padding: 93rpx 0;
       background: #fff;
       display: flex;
       justify-content: center;
       flex-direction: column;
-      align-item: center;
+      align-items: center;
+      border-bottom-right-radius: 40rpx;
       .text{
         font-family: 'Bold';
         text-align:center;
@@ -399,7 +401,8 @@ export default {
       }
     }
     .reselect{
-      margin-top: 16rpx;
+      // margin-top: 16rpx;
+      border-top-right-radius: 40rpx;
       width: 100%;
       padding: 80rpx 0;
       background: #fff;
@@ -414,21 +417,21 @@ export default {
         margin-top: 40rpx;
       }
     }
-    .switch{
-      border-top-right-radius: 40rpx;
-      // height: 200rpx;
-      padding: 80rpx 0 80rpx;
-      background: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      .text{
-        font-family: 'Bold';
-        text-align: center;
-        color: #707070;
-      }
-    }
+    // .switch{
+    //   border-top-right-radius: 40rpx;
+    //   // height: 200rpx;
+    //   padding: 80rpx 0 80rpx;
+    //   background: #fff;
+    //   display: flex;
+    //   justify-content: center;
+    //   align-items: center;
+    //   flex-direction: column;
+    //   .text{
+    //     font-family: 'Bold';
+    //     text-align: center;
+    //     color: #707070;
+    //   }
+    // }
     .left-container{
       width: 49%;
       float: left;

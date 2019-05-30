@@ -1,11 +1,11 @@
 <template>
   <div @click="editCard" :class="['card-container',{'noPic':cardInfo.isFree===1||!cardInfo.img}]">
-    <div v-if="cardInfo.isFree===0&&cardInfo.img" class="pic-container">
+    <div v-if="(cardInfo.isFree===0||cardInfo.isFree===2)&&cardInfo.img" class="pic-container">
       <image class="pic" :src="cardInfo.img" mode="aspectFill"></image>
     </div>
     <div class="content-container">
       <div v-if="cardInfo.title" class="title">{{cardInfo.title}}</div>
-      <div :class="[{'freeword':cardInfo.isFree===0}]">{{cardInfo.isFree===1?cardInfo.voc:frontWord}}</div>
+      <div :class="[{'freeword':(cardInfo.isFree===0||cardInfo.isFree===2)}]">{{cardInfo.isFree===1?cardInfo.voc:frontWord}}</div>
       <div class="time">{{cardInfo.countTime}}</div>
     </div>
     <div @click.stop="deleteCard" :class="['delete-container', {'delete-show':isDelete&&cardInfo.isFree==1}]">

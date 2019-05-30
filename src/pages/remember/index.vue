@@ -1,10 +1,11 @@
 <template>
-  <div :class="[{'background':toEnd||!hasTask}, 'page-container']" :style="'min-height:'+windowHeight+'px;'">
+  <div :class="[{'background':toEnd || !hasTask}, 'page-container']" :style="'min-height:'+windowHeight+'px;'">
     <div :class="[{'down':down},{'left':left},{'right':right},'card-container']">
       <wordcard v-if="cardInfo&&task[index].isFree==1" :test="false" :wordInfo="cardInfo"></wordcard>
       <freecard v-if="cardInfo&&task[index].isFree==0" :wordInfo="cardInfo"></freecard>
+      <quescard v-if="cardInfo&&task[index].isFree==2" :wordInfo="cardInfo"></quescard>
     </div>
-    <div v-if="toEnd || !hasTask" class="bird-container">
+    <div v-if="toEnd" class="bird-container">
       <div class="wrapper">
         <img class="bird" src="https://img.xhfkindergarten.cn/boxer-bird.png">
         <div class="word">恭喜完成所有卡片</div>
@@ -38,6 +39,7 @@
 
 <script>
 import freecard from '@/components/freecard'
+import quescard from '@/components/quescard'
 import Icon from '@/components/Icon'
 import wordcard from '@/components/wordcard'
 import config from '@/config'
@@ -49,7 +51,7 @@ export default {
       // 当前卡片张数
       index: '',
       // 当前显示卡片的哪一面
-      cardSide: false,
+      // cardSide: false,
       // // 是否可以进入下一卡片
       // next: false,
       // timeGap的意思就是当前经过了这个时间段才加入队列
@@ -68,16 +70,17 @@ export default {
       down: false,
       left: false,
       right: false,
-      hasTask: true
+      hasTask: true,
+      toEnd: false
     }
   },
   computed: {
     windowHeight () {
       return wx.getSystemInfoSync().windowHeight
     },
-    toEnd () {
-      return this.index === this.task.length
-    },
+    // toEnd () {
+    //   return this.task.length > 0 && this.index === this.task.length
+    // },
     showTimeGapList () {
       const arr = []
       let index
@@ -92,6 +95,7 @@ export default {
   },
   components: {
     wordcard,
+    quescard,
     freecard,
     Icon
   },
@@ -102,6 +106,10 @@ export default {
       this.down = false
       this.right = false
       let cardInfo
+      if (this.task.length === newValue) {
+        this.toEnd = true
+        return
+      }
       // isFree=1说明是单词卡片
       if (this.task[newValue].isFree === 1) {
         wx.showLoading({
@@ -119,7 +127,8 @@ export default {
     }
   },
   onShow () {
-
+    console.log('onShow')
+    // this.initPage()
   },
   methods: {
     // 返回
@@ -132,7 +141,7 @@ export default {
     // 重置页面
     async initPage () {
       this.index = ''
-      this.cardSide = false
+      // this.cardSide = false
       this.next = false
       this.timeGap = 0
       this.task = []
@@ -147,6 +156,8 @@ export default {
       if (!res || res.cards.length === 0) {
         this.hasTask = false
         return
+      } else {
+        this.hasTask = true
       }
       this.index = 0
     },
@@ -328,7 +339,7 @@ export default {
 //   // animation: show 1s backwards;
 // }
 .page-container{
-  // padding-bottom: 200rpx;
+  padding-bottom: 200rpx;
 }
 @font-face {font-family: 'siyuanBold';
   src: url('//at.alicdn.com/t/webfont_xiycqi2lgj.eot'); /* IE9*/
