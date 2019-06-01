@@ -1,6 +1,6 @@
 <template>
   <div class="item-container">
-    {{word.word}}
+    {{word.vocabulary}}
   </div>
 </template>
 <script>

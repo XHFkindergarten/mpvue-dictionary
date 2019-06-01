@@ -2,12 +2,12 @@
   "pages": [
     "pages/hello/main",
     "pages/main/main",
+    "pages/search/main",
     "pages/me/main",
     "pages/myCard/main",
     "pages/editcard/main",
     "pages/remember/main",
     "pages/vocGroup/main",
-    "pages/search/main",
     "pages/test/main",
     "pages/usage/main",
     "pages/select/main",
@@ -43,9 +43,5 @@
     }
   ],
     "position": "bottom"
-  },
-  "networdTimeout": {
-    "request": 10000,
-    "downloadFile": 10000
   }
 }

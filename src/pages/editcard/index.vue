@@ -80,7 +80,7 @@
     <div class="front">
       <textarea v-model="cardInfo.freeBack" class="front-input" cols="10" rows="3" maxlength="80"></textarea>
     </div>
-    <div class="switch">
+    <div class="switch" v-if="cardInfo.isFree===0">
       是否开启随机正反面<switch :checked="randomSide" color="#587AA5" @change="toggleRandom"></switch>
     </div>
     <div class="btn-container">
@@ -183,15 +183,24 @@ export default {
       }
     },
     async deleteCard () {
-      const res = await this.$request(`${config.host}/word/deleteCard?id=${this.cardInfo.id}`)
-      if (res.success) {
-        this.$message.success('删除成功', 1000)
-        setTimeout(() => {
-          wx.navigateBack({
-            delta: 1
-          })
-        }, 1000)
-      }
+      const that = this
+      wx.showModal({
+        title: 'info',
+        content: '删除后卡片不可恢复,请问是否删除？',
+        success: async res => {
+          if (res.confirm) {
+            const res1 = await that.$request(`${config.host}/word/deleteCard?id=${this.cardInfo.id}`)
+            if (res1.success) {
+              this.$message.success('删除成功', 1000)
+              setTimeout(() => {
+                wx.navigateBack({
+                  delta: 1
+                })
+              }, 1000)
+            }
+          }
+        }
+      })
     },
     // 播放录音
     readAudio (num) {

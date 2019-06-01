@@ -104,7 +104,7 @@ export default {
     color: #706F74;
   }
   .content-container{
-    transition: top 0.2s;
+    transition: top 0.8s;
     position: relative;
     top: 800rpx;
     margin: 0 auto;

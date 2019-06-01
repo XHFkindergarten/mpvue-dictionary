@@ -64,7 +64,7 @@ export default {
       const openId = wx.getStorageSync('userInfo').openId
       console.log(openId)
       const isFree = 1
-      const voc = this.wordInfo.word_name
+      const voc = this.wordInfo.vocName
       const res = await this.$request(`${config.host}/word/addCard`, 'POST', {
         openId,
         isFree,
@@ -99,14 +99,16 @@ export default {
       this.suggestList = []
     },
     async chooseItem (word) {
+      this.removeCard()
       this.searchText = ''
       this.suggestList = []
-      await this.searchWord(word.word)
+      await this.searchWord(word.vocabulary)
     },
     async searchWord (input) {
       this.$message.find('searching...')
       const res = await this.$request(`${config.host}/word/oneWord?word=${input}`)
-      if (res.word.word_name) {
+      console.log(res)
+      if (res.word && res.word.vocName) {
         this.wordInfo = res.word
         setTimeout(() => {
           this.down = true

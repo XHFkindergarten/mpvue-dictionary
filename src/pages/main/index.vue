@@ -787,6 +787,21 @@ export default {
       console.log(res)
       this.totalNum = res.totalNum
       this.taskNum = res.taskNum
+      if (res.taskNum > 0) {
+        wx.showTabBarRedDot({
+          index: 0,
+          success: res => {
+            console.log('显示红点')
+          }
+        })
+      } else {
+        wx.hideTabBarRedDot({
+          index: 0,
+          success: res => {
+            console.log('隐藏红点')
+          }
+        })
+      }
       setTimeout(() => {
         wx.hideNavigationBarLoading()
       }, 500)
@@ -835,7 +850,7 @@ export default {
         } else if (this.ready2uploadRec3) {
           this.recordDuration3 = `${Math.ceil(res.duration / 1000)}s`
           this.uploadRecordToQiniu(3)
-        } else {
+        } else if (this.ready2uploadRec4) {
           this.recordDuration4 = `${Math.ceil(res.duration / 1000)}s`
           this.uploadRecordToQiniu(4)
         }

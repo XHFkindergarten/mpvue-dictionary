@@ -6,34 +6,34 @@
       </div>
       <div @click="startLearning" class="circle">
         <div :class="hasDetail?'title2':'title'">
-          {{hasDetail?vocDetail.word_name:typeInfo.title}}
+          {{hasDetail?vocDetail.vocName:typeInfo.title}}
         </div>
         <div v-show="!hasDetail" class="start">tap to start</div>
       </div>
       <div v-if="hasDetail" style="width:90%;">
-        <div class="pron" v-for="pron in vocDetail.symbols" :key="pron.ph_en">
-          <div @click="audioUk(pron)" class="uk">英 {{pron.ph_en}}<img v-if="pron.ph_en_mp3" src="/static/icon/sound.png"></div>
-          <div @click="audioUs(pron)" class="uk">美 {{pron.ph_am}}<img v-if="pron.ph_am_mp3" src="/static/icon/sound.png"></div>
-          <div v-for="(part,_index) in pron.parts" :key="_index" class="meaning">
-            {{part.part}} {{part.means}}
+        <div class="pron">
+          <div @click="audioUk()" class="uk">英 {{vocDetail.phEn}}<img v-if="vocDetail.phEn_mp3" src="/static/icon/sound.png"></div>
+          <div @click="audioUs()" class="uk">美 {{vocDetail.phAm}}<img v-if="vocDetail.phAm_mp3" src="/static/icon/sound.png"></div>
+          <div v-for="part in meaning" :key="part.type" class="meaning">
+            {{part.type}} {{part.means}}
           </div>
         </div>
         <div class="word-status">
-          <div v-show="vocDetail.exchange.word_pl" class="word-pl">复数:{{vocDetail.exchange.word_pl}}</div>
-          <div v-show="vocDetail.exchange.word_past" class="word-pl">过去式:{{vocDetail.exchange.word_past}}</div>
-          <div v-show="vocDetail.exchange.word_done" class="word-pl">完成时:{{vocDetail.exchange.word_done}}</div>
-          <div v-show="vocDetail.exchange.word_ing" class="word-pl">进行时:{{vocDetail.exchange.word_ing}}</div>
-          <div v-show="vocDetail.exchange.word_er" class="word-pl">比较级:{{vocDetail.exchange.word_er}}</div>
-          <div v-show="vocDetail.exchange.word_est" class="word-pl">最高级:{{vocDetail.exchange.word_est}}</div>
+          <div v-show="vocDetail.vocPl" class="word-pl">复数:{{vocDetail.vocPl}}</div>
+          <div v-show="vocDetail.vocPast" class="word-pl">过去式:{{vocDetail.vocPast}}</div>
+          <div v-show="vocDetail.vocDone" class="word-pl">完成时:{{vocDetail.vocDone}}</div>
+          <div v-show="vocDetail.vocIng" class="word-pl">进行时:{{vocDetail.vocIng}}</div>
+          <div v-show="vocDetail.vocEr" class="word-pl">比较级:{{vocDetail.vocEr}}</div>
+          <div v-show="vocDetail.vocEst" class="word-pl">最高级:{{vocDetail.vocEst}}</div>
         </div>
         <div @click="toggleSent" class="but-container">
           <div :class="showSent?'down':'up'">
             <Icon size="mini" icon="down"></Icon>
           </div>
         </div>
-        <div v-show="showSent" class="sent-container" v-for="sent in vocDetail.sentense" :key="sent.orig">
-          <div class="en"><span v-html="sent.orig"></span></div>
-          <div class="cn">{{sent.trans}}</div>
+        <div v-show="showSent" class="sent-container" v-for="sent in sentenses" :key="sent.sent">
+          <div class="en"><span v-html="sent.sent"></span></div>
+          <div class="cn">{{sent.sentCn}}</div>
         </div>
       </div>
       
@@ -143,6 +143,35 @@ export default {
       } else {
         return true
       }
+    },
+    sentenses () {
+      return [
+        {
+          sent: this.vocDetail.sent1,
+          sentCn: this.vocDetail.sent1Cn
+        }, {
+          sent: this.vocDetail.sent2,
+          sentCn: this.vocDetail.sent2Cn
+        }
+      ]
+    },
+    meaning () {
+      let arr1, arr2, type
+      const res = []
+      if (!this.vocDetail) {
+        return []
+      } else {
+        arr1 = this.vocDetail.means.split('lzk1')
+        arr1.forEach(line => {
+          arr2 = line.split('lzk2')
+          type = arr2.shift()
+          res.push({
+            type,
+            means: arr2.join('、')
+          })
+        })
+      }
+      return res
     }
   },
   methods: {
@@ -165,8 +194,8 @@ export default {
     toggleSent () {
       this.showSent = !this.showSent
     },
-    audioUk (pron) {
-      if (!pron.ph_en_mp3) {
+    audioUk () {
+      if (!this.vocDetail.phEn_mp3) {
         return
       }
       wx.showLoading({
@@ -175,7 +204,7 @@ export default {
       // 创建音频实例
       const audio = wx.createInnerAudioContext()
       audio.autoplay = true
-      audio.src = pron.ph_en_mp3
+      audio.src = this.vocDetail.phEn_mp3
       audio.onPlay(() => {
         // 播放时执行
         wx.hideLoading()
@@ -184,8 +213,8 @@ export default {
         this.$message.error(res)
       })
     },
-    audioUs (pron) {
-      if (!pron.ph_am_mp3) {
+    audioUs () {
+      if (!this.vocDetail.phAm_mp3) {
         return
       }
       wx.showLoading({
@@ -194,7 +223,7 @@ export default {
       // 创建音频实例
       const audio = wx.createInnerAudioContext()
       audio.autoplay = true
-      audio.src = pron.ph_am_mp3
+      audio.src = this.vocDetail.phAm_mp3
       audio.onPlay(() => {
         wx.hideLoading()
       })

@@ -3,34 +3,34 @@
     <!-- <div class="pic-container">
       <image class="pic" :src="wordInfo.labelImg" mode="widthFill"></image>
     </div> -->
-    <div class="word-name">{{wordInfo.word_name}}</div>
+    <div class="word-name">{{wordInfo.vocName}}</div>
 
     <div :class="cardSide?'content-container':'content-container max-height'">
       
       <div v-if="!cardSide">
-        <div class="pron" v-for="pron in wordInfo.symbols" :key="pron.ph_en">
-          <div @click.stop="audioUk(pron)" class="uk">英 {{pron.ph_en}}<img v-if="pron.ph_en_mp3" src="/static/icon/sound.png"></div>
-          <div @click.stop="audioUs(pron)" class="uk">美 {{pron.ph_am}}<img v-if="pron.ph_am_mp3" src="/static/icon/sound.png"></div>
-          <div v-for="(part,_index) in pron.parts" :key="_index" class="meaning">
-            {{part.part}} {{part.means}}
+        <div class="pron">
+          <div @click.stop="audioUk()" class="uk">英 {{wordInfo.phEn}}<img v-if="wordInfo.phEn_mp3" src="/static/icon/sound.png"></div>
+          <div @click.stop="audioUs()" class="uk">美 {{wordInfo.phAm}}<img v-if="wordInfo.phAm_mp3" src="/static/icon/sound.png"></div>
+          <div v-for="part in meaning" :key="part.type" class="meaning">
+            {{part.type}} {{part.means}}
           </div>
         </div>
         <div class="word-status">
-          <div v-show="wordInfo.exchange.word_pl" class="word-pl">复数:{{wordInfo.exchange.word_pl}}</div>
-          <div v-show="wordInfo.exchange.word_past" class="word-pl">过去式:{{wordInfo.exchange.word_past}}</div>
-          <div v-show="wordInfo.exchange.word_done" class="word-pl">完成时:{{wordInfo.exchange.word_done}}</div>
-          <div v-show="wordInfo.exchange.word_ing" class="word-pl">进行时:{{wordInfo.exchange.word_ing}}</div>
-          <div v-show="wordInfo.exchange.word_er" class="word-pl">比较级:{{wordInfo.exchange.word_er}}</div>
-          <div v-show="wordInfo.exchange.word_est" class="word-pl">最高级:{{wordInfo.exchange.word_est}}</div>
+          <div v-show="wordInfo.vocPl" class="word-pl">复数:{{wordInfo.vocPl}}</div>
+          <div v-show="wordInfo.vocPast" class="word-pl">过去式:{{wordInfo.vocPast}}</div>
+          <div v-show="wordInfo.vocDone" class="word-pl">完成时:{{wordInfo.vocDone}}</div>
+          <div v-show="wordInfo.vocIng" class="word-pl">进行时:{{wordInfo.vocIng}}</div>
+          <div v-show="wordInfo.vocEr" class="word-pl">比较级:{{wordInfo.vocEr}}</div>
+          <div v-show="wordInfo.vocEst" class="word-pl">最高级:{{wordInfo.vocEst}}</div>
         </div>
         <div @click.stop="toggleSent" class="but-container">
           <div :class="showSent?'down':'up'">
             <Icon size="mini" icon="down"></Icon>
           </div>
         </div>
-        <div v-show="showSent" class="sent-container" v-for="sent in wordInfo.sentense" :key="sent.orig">
-          <div class="en"><span v-html="sent.orig"></span></div>
-          <div class="cn">{{sent.trans}}</div>
+        <div v-show="showSent" class="sent-container" v-for="sent in sentenses" :key="sent.sent">
+          <div class="en"><span v-html="sent.sent"></span></div>
+          <div class="cn">{{sent.sentCn}}</div>
         </div>
       </div>
 
@@ -52,6 +52,38 @@ export default {
       cardSide: true
     }
   },
+  computed: {
+    // 对返回的单词信息进行重新组装
+    sentenses () {
+      return [
+        {
+          sent: this.wordInfo.sent1,
+          sentCn: this.wordInfo.sent1Cn
+        }, {
+          sent: this.wordInfo.sent2,
+          sentCn: this.wordInfo.sent2Cn
+        }
+      ]
+    },
+    meaning () {
+      let arr1, arr2, type
+      const res = []
+      if (!this.wordInfo) {
+        return []
+      } else {
+        arr1 = this.wordInfo.means.split('lzk1')
+        arr1.forEach(line => {
+          arr2 = line.split('lzk2')
+          type = arr2.shift()
+          res.push({
+            type,
+            means: arr2.join('、')
+          })
+        })
+      }
+      return res
+    }
+  },
   props: [
     'wordInfo'
   ],
@@ -67,8 +99,8 @@ export default {
       // 显示/隐藏例句
       this.showSent = !this.showSent
     },
-    audioUk (pron) {
-      if (!pron.ph_en_mp3) {
+    audioUk () {
+      if (!this.wordInfo.phEn_mp3) {
         this.$message.warning('暂无音频')
         return
       }
@@ -84,7 +116,7 @@ export default {
       // 创建音频实例
       const audio = wx.createInnerAudioContext()
       audio.autoplay = true
-      audio.src = pron.ph_en_mp3
+      audio.src = this.wordInfo.phEn_mp3
       audio.onPlay(() => {
         wx.hideLoading()
         // 播放时执行
@@ -95,8 +127,8 @@ export default {
         this.$message.error(res)
       })
     },
-    audioUs (pron) {
-      if (!pron.ph_am_mp3) {
+    audioUs () {
+      if (!this.wordInfo.phAm_mp3) {
         this.$message.warning('暂无音频')
         return
       }
@@ -111,7 +143,7 @@ export default {
       // 创建音频实例
       const audio = wx.createInnerAudioContext()
       audio.autoplay = true
-      audio.src = pron.ph_am_mp3
+      audio.src = this.wordInfo.phAm_mp3
       audio.onPlay(() => {
         wx.hideLoading()
         console.log('播放')
@@ -123,6 +155,12 @@ export default {
     }
   },
   mounted () {
+    wx.loadFontFace({
+      family: 'nolan',
+      source: 'url("https://img.xhfkindergarten.cn/Nolan-Bold_0.ttf")'
+    })
+  },
+  onShow () {
     wx.loadFontFace({
       family: 'nolan',
       source: 'url("https://img.xhfkindergarten.cn/Nolan-Bold_0.ttf")'

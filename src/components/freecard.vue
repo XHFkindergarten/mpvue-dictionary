@@ -128,6 +128,7 @@ export default {
   margin-bottom: 30rpx;
   font-size: 40rpx;
   font-weight: bold;
+  text-align: center;
 }
 .card-container{
   padding-bottom: 60rpx;

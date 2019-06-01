@@ -150,6 +150,7 @@ export default {
 <style lang="less" scoped>
 
 .title{
+  text-align: center;
   width: 90%;
   padding-left: 30rpx;
   margin-bottom: 30rpx;
@@ -225,7 +226,8 @@ export default {
         text-align: left;
         color: #000;
         word-wrap: break-word;
-        margin-top: 10rpx;
+        margin: 40rpx 0 20rpx;
+        color: #706F74;
       }
       .compareres{
         text-align: center;

@@ -7,6 +7,10 @@ export function request (url, method, data) {
       url: url,
       // 切记后端的ctx.body中一定要加success字段啊!
       success: function (res) {
+        if (res.statusCode !== 200) {
+          resolve(res.statusCode)
+          return
+        }
         if (res.data) {
           resolve(res.data)
         } else {

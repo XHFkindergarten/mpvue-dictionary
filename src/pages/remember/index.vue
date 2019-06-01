@@ -1,11 +1,7 @@
 <template>
   <div :class="[{'background':toEnd || !hasTask}, 'page-container']" :style="'min-height:'+windowHeight+'px;'">
-    <div :class="[{'down':down},{'left':left},{'right':right},'card-container']">
-      <wordcard v-if="cardInfo&&task[index].isFree==1" :test="false" :wordInfo="cardInfo"></wordcard>
-      <freecard v-if="cardInfo&&task[index].isFree==0" :wordInfo="cardInfo"></freecard>
-      <quescard v-if="cardInfo&&task[index].isFree==2" :wordInfo="cardInfo"></quescard>
-    </div>
-    <div v-if="toEnd" class="bird-container">
+    
+    <div v-if="toEnd || !hasTask" class="bird-container">
       <div class="wrapper">
         <img class="bird" src="https://img.xhfkindergarten.cn/boxer-bird.png">
         <div class="word">恭喜完成所有卡片</div>
@@ -13,6 +9,11 @@
       <div class="btn-container">
         <button @click="backTo" class="back">返回</button>
       </div>
+    </div>
+    <div v-else :class="[{'down':down},{'left':left},{'right':right},'card-container']">
+      <wordcard v-if="cardInfo&&task[index].isFree==1" :test="false" :wordInfo="cardInfo"></wordcard>
+      <freecard v-if="cardInfo&&task[index].isFree==0" :wordInfo="cardInfo"></freecard>
+      <quescard v-if="cardInfo&&task[index].isFree==2" :wordInfo="cardInfo"></quescard>
     </div>
     <div :class="[{fadein:!toEnd&&task.length>0}, 'bottom-container']">
       <button @click="nextCard(0)">
@@ -106,7 +107,9 @@ export default {
       this.down = false
       this.right = false
       let cardInfo
-      if (this.task.length === newValue) {
+      console.log('index', newValue)
+      console.log('task', this.task.length)
+      if (this.task.length === newValue && newValue !== '') {
         this.toEnd = true
         return
       }
@@ -349,7 +352,7 @@ export default {
   url('//at.alicdn.com/t/webfont_xiycqi2lgj.svg#NotoSansHans-Black') format('svg'); /* iOS 4.1- */
 }
 .background {
-  background-image: url('https://img.xhfkindergarten.cn/toptal-blog-image-1501178946393-ce513b02e7d488a192ed06a88c2f2759.png')
+  background-image: url('https://img.xhfkindergarten.cn/email-pattern.png')
 }
 </style>
 

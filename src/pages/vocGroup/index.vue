@@ -157,7 +157,7 @@ export default {
       setTimeout(() => {
         this.index++
         this.cardSide = true
-      }, 600)
+      }, 800)
     },
     async add () {
       this.right = true
@@ -165,9 +165,11 @@ export default {
       const res = await this.$request(`${config.host}/word/addCard`, 'POST', {
         openId,
         isFree: 1,
-        voc: this.cardInfo.word_name
+        voc: this.cardInfo.vocName
       })
-      if (res.success) {
+      if (res === 400) {
+        this.$message.warning('添加卡片失败:(')
+      } else if (res.success) {
         const res1 = await this.$request(`${config.host}/word/addToday?openId=${openId}`)
         console.log(res1)
         this.$message.success('添加卡片成功', 1000)
@@ -253,7 +255,7 @@ export default {
   position: relative;
   left: 0;
   top: -800rpx;
-  transition: all 0.4s;
+  transition: all 0.8s;
   // animation: down 1s ease-in-out forwards;
 }
 // @-webkit-keyframes appear {
@@ -372,7 +374,7 @@ export default {
   url('//at.alicdn.com/t/webfont_1aw5gdz0gry.svg#NotoSansHans-Black') format('svg'); /* iOS 4.1- */
 }
 .background {
-  background-image: url('https://img.xhfkindergarten.cn/toptal-blog-image-1501178946393-ce513b02e7d488a192ed06a88c2f2759.png')
+  background-image: url('https://img.xhfkindergarten.cn/email-pattern.png')
 }
 </style>
 
