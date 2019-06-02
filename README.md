@@ -1,8 +1,20 @@
-**Abandon** 记忆卡祖
+**Abandon** 记忆卡组
 =
-<div style="width:100%;align:center">
-   <img src="https://img.xhfkindergarten.cn/default-bird.png" height="200" />
-</div>
 
-> 特性
-* 
+<div style="align:center;width:100%;">
+   <img src="https://img.xhfkindergarten.cn/default-bird.png" width="200" />
+</div>
+<br>
+
+> 介绍
+
+    一个降智&&简化&&小程序版本的anki，不需要了解MarkDown和HTML语法也能够使用
+    定制英语学习卡片，46级、考研、托福、雅思
+    碎片时间记忆工具，等车、排队、朋友尬聊时打开记忆队列，随时管理记忆内容，养成热爱学习不刷微博的好习惯（/握拳）
+<br><br>
+> 功能
+<br>
+* 记忆内容以卡片形式呈现。根据当前时间点需要记忆的卡片动态生成记忆队列
+* 智能筛选出你的记忆薄弱环节，把有限的精力仅关注在你可能将要忘记的学习材料上.。<br>遵循艾宾浩斯记忆遗忘曲线，复习完一张卡片后，根据你的掌握程度选择在遗忘时间点（5min,30min,1h,4h...)将卡片重新加入记忆队列，反复记忆，永不遗忘
+* 2种卡片形式<br>
+    1.默认内容卡片，分为正反两面，主要提供联想记忆。
