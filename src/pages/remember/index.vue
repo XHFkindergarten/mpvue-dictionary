@@ -110,8 +110,11 @@ export default {
       console.log('index', newValue)
       console.log('task', this.task.length)
       if (this.task.length === newValue && newValue !== '') {
+        console.log('ToEND为true')
         this.toEnd = true
         return
+      } else {
+        this.toEnd = false
       }
       // isFree=1说明是单词卡片
       if (this.task[newValue].isFree === 1) {
@@ -131,7 +134,10 @@ export default {
   },
   onShow () {
     console.log('onShow')
-    // this.initPage()
+    if (this.$store.initCard) {
+      this.initPage()
+      this.$store.initCard = false
+    }
   },
   methods: {
     // 返回
@@ -198,6 +204,10 @@ export default {
   },
   async mounted () {
     this.initPage()
+  },
+  onUnload () {
+    console.log(this.$store.state)
+    this.$store.state.initCard = true
   }
 }
 </script>

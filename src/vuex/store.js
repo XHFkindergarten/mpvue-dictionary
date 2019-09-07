@@ -10,7 +10,8 @@ const store = new Vuex.Store({
     userinfo: {},
     hasLogin: false,
     route: '',
-    previewImg: false
+    previewImg: false,
+    initCard: false
   },
   mutations: {
 

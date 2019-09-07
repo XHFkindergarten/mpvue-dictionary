@@ -58,7 +58,7 @@ export default {
     // 确认
     async comfirm () {
       if (this.selectedBooks.length === 0) {
-        this.$message.warning('选书啊崽种', 1000)
+        this.$message.success('选书啊宝贝=3=', 1000)
         return
       }
       const openId = wx.getStorageSync('userInfo').openId

@@ -3,7 +3,12 @@
     <div :class="['title-container',{'fade-in':fadein}]" :style="'color:'+titleColor[index]+';'">Abandon</div>
     <div :class="['explain-container',{'fade-in':fadein}]" :style="'color:'+titleColor[index]+';'">fantastic tool for memorizing</div>
     <div :class="['login-container',{'fade-in':fadein}]">
-      <button class="button" open-type="getUserInfo" @getuserinfo="doLogin" :style="'background:'+buttonColor[index]+';color:'+beginColor[index]+';'">开始学习</button>
+      <form @submit="formSubmit" report-submit="true">
+        <button class="button" form-type="submit" open-type="getUserInfo" @getuserinfo="doLogin" :style="'background:'+buttonColor[index]+';color:'+beginColor[index]+';'">开始学习</button>
+      </form>
+      <!-- <form @submit="formSubmit" report-submit="true">
+        <button form-type="submit">测试</button>
+      </form> -->
     </div>
   </div>
 </template>
@@ -62,6 +67,9 @@ export default {
   computed: {
   },
   methods: {
+    formSubmit (e) {
+      console.log('test', e.target.formId)
+    },
     async doLogin (e) {
       let userInfo = wx.getStorageSync('userInfo')
       if (!userInfo) {
@@ -76,7 +84,6 @@ export default {
         code
       })
       wx.hideLoading()
-      console.log(res)
       if (res.hasRegister) {
         this.$store.route = 'main'
         // 已经注册过了

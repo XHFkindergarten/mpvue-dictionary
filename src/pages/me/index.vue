@@ -159,7 +159,7 @@ export default {
               console.log('draw')
               wx.hideLoading()
               if (that.hasPunch) {
-                this.$message.success('你打过卡了崽种')
+                this.$message.success('你打过卡了o宝贝')
               } else {
                 this.$message.success('打卡成功!')
               }
