@@ -1,38 +1,81 @@
-# vue-dictionary
+**Abandon** 记忆卡组
+=
+#### 小程序名: Abandonnn
 
-> English Words Pad
+<div style="align:center;width:100%;">
+   <img src="https://img.xhfkindergarten.cn/default-bird.png" width="200" />
+</div>
+<br>
 
-## Build Setup
+---
 
-``` bash
-# 初始化项目
-vue init mpvue/mpvue-quickstart myproject
-cd myproject
+> 介绍
 
-# 安装依赖
-yarn
+    一个降智&&简化&&小程序版本的anki，不需要了解MarkDown和HTML语法也能够使用
+    定制英语学习卡片，46级、考研、托福、雅思
+    碎片时间记忆工具，等车、排队、朋友尬聊时打开记忆队列，随时管理记忆内容，养成热爱学习不刷微博的好习惯（/握拳）
+<br><br>
+> 记忆
 
-# 开发时构建
-npm dev
+<br>
 
-# 打包构建
-npm build
+    * 记忆内容以卡片形式呈现。根据当前时间点需要记忆的卡片动态生成记忆队列
+    智能筛选出你的记忆薄弱环节，把有限的精力仅关注在你可能将要忘记的学习材料上.。
+    遵循艾宾浩斯记忆遗忘曲线，复习完一张卡片后
+    根据你的掌握程度选择在遗忘时间点（5min,30min,1h,4h...)将卡片重新加入记忆队列
+    反复记忆，永不遗忘
 
-# 指定平台的开发时构建(微信、百度、头条、支付宝)
-npm dev:wx
-npm dev:swan
-npm dev:tt
-npm dev:my
+<br>
 
-# 指定平台的打包构建
-npm build:wx
-npm build:swan
-npm build:tt
-npm build:my
+    
+> 卡片
 
-# 生成 bundle 分析报告
-npm run build --report
-```
+<br>
 
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
-# mpvue-dictionary
+    * 常规卡片（双向联想）
+    支持 正反两面自定义内容
+    支持 录音、图片、文字
+    支持 记忆队列中正反面随机显示
+    
+<br>
+
+    * 问答卡片 (单向记忆)
+    支持 正反两面自定义内容
+    支持 答案校对功能(错误部分高亮显示)
+    
+<br>
+
+> 单词
+
+<br>
+
+    * 单词学习打卡(独立功能)
+    单词引擎是自己写的单词数据库和搜索API（后续会继续增加(maybe)）
+    支持 与扇贝打卡相同的单词组学习功能(读音、音频、释义、例句)
+    支持 大学英语四六级、专业四级、专业八级、考研英语、托福、雅思
+    支持 将希望掌握的单词作为单词卡片加入记忆队列
+    
+<br>
+
+> 操作引导
+
+<br>
+
+    * Card
+        1. 自定义卡片 创建自己的卡片
+        2. 录音组件 （左:结束，中:暂停，右:取消)
+        3. 开始 进入记忆队列
+        
+    * Daily
+        1. 白色圆形按钮 开始单词学习/选择参考书
+        2. 点击单词 显示单词具体信息
+    
+    * Me 
+        1. MY CARDS 查看我的卡片（查看下一次加入记忆队列的时间、编辑、删除卡片）
+        2. RESELECT 重新选择英语学习资料
+        3. TODAY CARDS 今天学习过的卡片数量
+        4. SHARE 打卡功能:)
+
+
+    
+
