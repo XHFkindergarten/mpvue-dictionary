@@ -1,4 +1,4 @@
-**Abandon** 记忆卡组
+**Abandon** 记忆卡组(该项目已下线)
 =
 #### 小程序名: Abandonnn
 
